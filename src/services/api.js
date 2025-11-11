@@ -27,14 +27,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const status = err?.response?.status;
+    const url = err?.config?.url || "";
+
+    // Only redirect on 401 if it's NOT the login request
+    if (status === 401 && !url.endsWith("/login")) {
       localStorage.removeItem("token");
       window.location.href = "/login";
+      return; // not strictly necessary, but keeps intent clear
     }
+
     return Promise.reject(err);
   }
 );
 
+
 export default api;
-
-
