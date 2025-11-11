@@ -1,43 +1,39 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+// DRY service instead of axios directly
+import { login as loginRequest } from "../../services/authService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErr("");
-
-    const API = import.meta.env.VITE_API_URL; // e.g. https://.../api
-    const PROJECT_ID = import.meta.env.VITE_NOVI_PROJECT_ID;
+    setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${API}/login`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "novi-education-project-id": PROJECT_ID,
-          },
-        }
-      );
-
       
-      const token = res.data.token;
+      const res = await loginRequest({ email, password });
+
+      // The NOVI API usually returns token:
+      const token = res.data?.token || res.data?.jwt;
       if (!token) throw new Error("Geen token in response.");
 
       localStorage.setItem("token", token);
       navigate("/"); // go to Dashboard
-    } catch (error) {
-      const status = error?.response?.status;
-      if (status === 401) setErr("Onjuiste inloggegevens.");
+    } catch (e) {
+      // timeout-friendly message
+      if (e.code === "ECONNABORTED")
+        setErr("De server reageert traag. Probeer het zo nog eens.");
+      else if (e?.response?.status === 401) setErr("Onjuiste inloggegevens.");
       else setErr("Inloggen mislukt. Probeer opnieuw.");
-      console.error("Login error:", error?.response?.data || error.message);
+      console.error("Login error:", e?.response?.data || e.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -45,31 +41,36 @@ export default function Login() {
     <div className="login-page">
       <h2>Inloggen</h2>
       <form onSubmit={handleSubmit} className="login-form">
-        <label>
-          E-mail
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="username"
-          />
-        </label>
-        <label>
-          Wachtwoord
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
-        </label>
+        <label htmlFor="email">E-mail</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="username"
+        />
+
+        <label htmlFor="password">Wachtwoord</label>
+        <input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+        />
 
         {err && <p style={{ color: "crimson" }}>{err}</p>}
 
-        <button type="submit">Inloggen</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Bezig…" : "Inloggen"}
+        </button>
       </form>
+
+      <p style={{ marginTop: 12 }}>
+        Nog geen account? <Link to="/register">Maak er één aan</Link>
+      </p>
     </div>
   );
 }
