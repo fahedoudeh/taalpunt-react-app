@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { getActivities } from "../../services/activityService";
+import { getMessages } from "../../services/messageService";
 
-export default function Dashboard() {
-  const [items, setItems] = useState([]);
+export default function Board() {
+  const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -11,19 +11,18 @@ export default function Dashboard() {
       setError("");
       setLoading(true);
       try {
-        //shared api client adds headers/token/timeout
-        const { data } = await getActivities();
-        setItems(Array.isArray(data) ? data : []);
+        // api client adds headers/token/timeout
+        const { data } = await getMessages();
+        setMessages(Array.isArray(data) ? data : []);
       } catch (e) {
-        // timeout-friendly message
         if (e.code === "ECONNABORTED") {
           setError("De server reageert traag. Probeer het zo nog eens.");
         } else if (e?.response?.status === 403 || e?.response?.status === 401) {
           setError("Geen toegang (403/401). Log in of controleer je rol.");
         } else {
-          setError("Kon activiteiten niet laden.");
+          setError("Kon berichten niet laden.");
         }
-        console.error("Activities error:", e?.response?.data || e.message);
+        console.error("Messages error:", e?.response?.data || e.message);
       } finally {
         setLoading(false);
       }
@@ -36,13 +35,13 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2>Dashboard</h2>
+      <h2>Berichten</h2>
       <ul>
-        {items.map((a) => (
-          <li key={a.id}>{a.title || a.name || `Activity #${a.id}`}</li>
+        {messages.map((m) => (
+          <li key={m.id}>{m.title || m.content || `Bericht #${m.id}`}</li>
         ))}
       </ul>
-      {!items.length && <p>Geen activiteiten gevonden.</p>}
+      {!messages.length && <p>Geen berichten gevonden.</p>}
     </div>
   );
 }
