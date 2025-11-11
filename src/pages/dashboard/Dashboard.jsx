@@ -1,48 +1,48 @@
-// src/pages/dashboard/Dashboard.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getActivities } from "../../services/activityService";
 
 export default function Dashboard() {
-  const [activities, setActivities] = useState([]);
+  const [items, setItems] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API = import.meta.env.VITE_API_URL; // e.g. https://.../api
-    const PROJECT_ID = import.meta.env.VITE_NOVI_PROJECT_ID;
-    const token = localStorage.getItem("token"); // we don’t have login yet → likely null
-
-    axios
-      .get(`${API}/events`, {
-        headers: {
-          "Content-Type": "application/json",
-          "novi-education-project-id": PROJECT_ID,
-          // add Authorization only if you already have a token (Phase 1 will give you one)
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      })
-      .then((res) => setActivities(res.data))
-      .catch((err) => {
-        const status = err?.response?.status;
-        if (status === 401 || status === 403) {
-          setError("Geen toegang (401/403). Log in om activiteiten te zien.");
+    (async () => {
+      setError("");
+      setLoading(true);
+      try {
+        //shared api client adds headers/token/timeout
+        const { data } = await getActivities();
+        setItems(Array.isArray(data) ? data : []);
+      } catch (e) {
+        // timeout-friendly message
+        if (e.code === "ECONNABORTED") {
+          setError("De server reageert traag. Probeer het zo nog eens.");
+        } else if (e?.response?.status === 403 || e?.response?.status === 401) {
+          setError("Geen toegang (403/401). Log in of controleer je rol.");
         } else {
           setError("Kon activiteiten niet laden.");
         }
-        console.error("Activities error:", err?.response?.data || err.message);
-      });
+        console.error("Activities error:", e?.response?.data || e.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  if (error) return <div style={{ padding: 16 }}>{error}</div>;
+  if (loading) return <div style={{ padding: 16 }}>Laden…</div>;
+  if (error)
+    return <div style={{ padding: 16, color: "crimson" }}>{error}</div>;
 
   return (
     <div style={{ padding: 16 }}>
       <h2>Dashboard</h2>
       <ul>
-        {activities.map((a) => (
+        {items.map((a) => (
           <li key={a.id}>{a.title || a.name || `Activity #${a.id}`}</li>
         ))}
       </ul>
-      {!activities.length && !error && <p>Geen activiteiten gevonden.</p>}
+      {!items.length && <p>Geen activiteiten gevonden.</p>}
     </div>
   );
 }
