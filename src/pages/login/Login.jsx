@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 // DRY service instead of axios directly
-import { login as loginRequest } from "../../services/authService";
+import { loginRequest } from "../../services/authService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      
+      // shared api client adds headers/token/timeout
       const res = await loginRequest({ email, password });
 
       // The NOVI API usually returns token:
