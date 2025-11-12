@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 // DRY service instead of axios directly
 import { loginRequest } from "../../services/authService";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,8 @@ export default function Login() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -23,7 +26,7 @@ export default function Login() {
       const token = res.data?.token || res.data?.jwt;
       if (!token) throw new Error("Geen token in response.");
 
-      localStorage.setItem("token", token);
+      login(token);
       navigate("/"); // go to Dashboard
     } catch (e) {
       // timeout-friendly message
