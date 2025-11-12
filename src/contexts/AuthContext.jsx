@@ -1,45 +1,50 @@
-//required for grading
-
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
-};
-
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // hydrate synchronously on first render (no flicker)
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
 
-  useEffect(() => {
-    // Check for stored token on mount
-    const token = localStorage.getItem("token");
-    if (token) {
-      // Validate token and set user
-      setUser(JSON.parse(localStorage.getItem("user")));
+  // (optional) derive user info from JWT for roles, email, etc.
+  const user = useMemo(() => {
+    if (!token) return null;
+    try {
+      const p = jwtDecode(token);
+      return {
+        id: p.sub ?? p.id ?? null,
+        email: p.email ?? null,
+        username: p.username ?? p.name ?? null,
+        roles: p.roles ?? p.authorities ?? p.scopes ?? [],
+      };
+    } catch {
+      return null;
     }
-    setLoading(false);
-  }, []);
+  }, [token]);
 
-  const login = async (credentials) => {
-    // Will implement with NOVI API
-    console.log("Login:", credentials);
+  const login = (newToken) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    setToken(null);
   };
 
-  const isTeacher = () => user?.role === "docent";
+  const isAuth = Boolean(token);
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isTeacher, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ token, user, isAuth, login, logout }),
+    [token, user, isAuth]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
+  return ctx;
 };
