@@ -8,20 +8,22 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   // (optional) derive user info from JWT for roles, email, etc.
-  const user = useMemo(() => {
-    if (!token) return null;
-    try {
-      const p = jwtDecode(token);
-      return {
-        id: p.sub ?? p.id ?? null,
-        email: p.email ?? null,
-        username: p.username ?? p.name ?? null,
-        roles: p.roles ?? p.authorities ?? p.scopes ?? [],
-      };
-    } catch {
-      return null;
-    }
-  }, [token]);
+   const user = useMemo(() => {
+     if (!token) return null;
+     try {
+       const p = jwtDecode(token);
+       const role = p.role ?? null; // single string
+       return {
+         id: p.userId ?? p.sub ?? null,
+         email: p.email ?? null,
+         role, // "user", "teacher", ...
+         roles: role ? [role] : [], // handy for “includes”
+         projectId: p.projectId ?? null,
+       };
+     } catch {
+       return null;
+     }
+   }, [token]);
 
   const login = (newToken) => {
     localStorage.setItem("token", newToken);
