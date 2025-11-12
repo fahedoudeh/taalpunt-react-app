@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 // DRY service instead of axios directly
-import { login as loginRequest } from "../../services/authService";
+import { loginRequest } from "../../services/authService";
+import { useAuth } from "../../contexts/AuthContext";
+import { jwtDecode } from "jwt-decode";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,21 +13,28 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const { login } = useAuth();
+
+  // if user came from a protected route, this will be set by <PrivateRoute />
+  const from = location.state?.from?.pathname || "/";
   async function handleSubmit(e) {
     e.preventDefault();
     setErr("");
     setLoading(true);
 
     try {
-      
+      // shared api client adds headers/token/timeout
       const res = await loginRequest({ email, password });
 
       // The NOVI API usually returns token:
       const token = res.data?.token || res.data?.jwt;
       if (!token) throw new Error("Geen token in response.");
-
-      localStorage.setItem("token", token);
-      navigate("/"); // go to Dashboard
+      const decodedT = jwtDecode(token);
+      console.log("payload of the token" , decodedT)
+      login(token);
+      navigate(from, { replace: true }); // go to Dashboard on first login or the location where the user was before redirected to login
     } catch (e) {
       // timeout-friendly message
       if (e.code === "ECONNABORTED")

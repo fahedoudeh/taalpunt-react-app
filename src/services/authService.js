@@ -5,10 +5,10 @@ import api from "./api";
 // Takes credentials (email, password) as parameter
 // Makes POST request to /login endpoint
 // Returns a promise with the response
-export const login = (credentials) => api.post("/login", credentials);
+export const loginRequest = (credentials) => api.post("/login", credentials);
 
 // Export a function called "register"
 // Takes payload (user data) as parameter
 // Makes POST request to /users endpoint
 // Returns a promise with the response
-export const register = (payload) => api.post("/users", payload);
+export const registerRequest = (payload) => api.post("/users", payload);

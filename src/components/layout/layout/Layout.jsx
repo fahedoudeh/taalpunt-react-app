@@ -1,12 +1,19 @@
-//Sidebar + Header wraper
 
-// This wraps pages with consistent sidebar + header
+import { Outlet } from "react-router-dom";
+import Navbar from "../navbar/Navbar";
+import Sidebar from "../sidebar/Sidebar";
+import "./Layout.css";
 
-
-<Layout>
-  <Sidebar /> // Navigation menu
-  <div>
-    <Header /> // User info, logout button
-    <main>{children}</main> // Page content
-  </div>
-</Layout>
+export default function Layout() {
+  return (
+    <div className="app-shell">
+      <Navbar />
+      <div className="content-area">
+        <Sidebar />
+        <main>
+          <Outlet /> {/* child routes render here */}
+        </main>
+      </div>
+    </div>
+  );
+}

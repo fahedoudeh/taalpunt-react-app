@@ -10,27 +10,39 @@ import Board from "./pages/board/Board.jsx";
 import TeachersRoom from "./pages/teachersRoom/TeachersRoom.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import NotFound from "./pages/notFound/NotFound.jsx";
+import PrivateRoute from "./routes/PrivateRoute.jsx";
+import Layout from "./components/layout/layout/Layout.jsx";
+import RoleRoute from "./routes/RoleRoute.jsx";
+
 import "./App.css";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        {/* Public routes without layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route path="/lessons" element={<Lessons />} />
-        <Route path="/lessons/:id" element={<LessonDetail />} />
+        {/* Private + layout */}
+        <Route
+          element={
+            <PrivateRoute>
+              <Layout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/lessons" element={<Lessons />} />
+          <Route path="/lessons/:id" element={<LessonDetail />} />
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/activities/:id" element={<ActivityDetail />} />
+          <Route path="/board" element={<Board />} />
+          <Route path="/teachers" element={<RoleRoute allow={["teacher"]}><TeachersRoom /></RoleRoute>}/>
+          <Route path="/profile" element={<Profile />} />
+        </Route>
 
-        <Route path="/activities" element={<Activities />} />
-        <Route path="/activities/:id" element={<ActivityDetail />} />
-
-        <Route path="/board" element={<Board />} />
-        <Route path="/teachers" element={<TeachersRoom />} />
-
-        <Route path="/profile" element={<Profile />} />
-
+        {/* Fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
