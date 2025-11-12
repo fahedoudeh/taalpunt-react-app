@@ -1,0 +1,9 @@
+/* src/components/ui/error/ErrorNotice.css */
+.error {
+  padding: .75rem 1rem;
+  border-radius: 8px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: .95rem;
+}

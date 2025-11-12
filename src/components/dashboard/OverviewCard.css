@@ -1,0 +1,17 @@
+/* src/components/dashboard/OverviewCard.css */
+.ovc {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.ovc + .ovc { margin-top: 1rem; }
+.ovc__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+}
+.ovc__title { margin: 0; font-size: 1.05rem; color: #111827; }
+.ovc__more { font-size: .9rem; color: #001489; text-decoration: underline; }
+.ovc__body > ul { margin: 0; padding: 0; list-style: none; }

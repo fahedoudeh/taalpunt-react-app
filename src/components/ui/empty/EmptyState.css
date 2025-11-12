@@ -1,0 +1,9 @@
+/* src/components/ui/empty/EmptyState.css */
+.empty {
+  padding: 1rem;
+  background: #f6f8fb;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+}
+.empty__title { margin: 0 0 .25rem; color: #475569; }
+.empty__link { color: #001489; text-decoration: underline; }
