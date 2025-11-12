@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   // hydrate synchronously on first render (no flicker)
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
-  // (optional) derive user info from JWT for roles, email, etc.
+  // derive user info from JWT for roles, email, etc.
    const user = useMemo(() => {
      if (!token) return null;
      try {
