@@ -12,6 +12,7 @@ import Profile from "./pages/profile/Profile.jsx";
 import NotFound from "./pages/notFound/NotFound.jsx";
 import PrivateRoute from "./routes/PrivateRoute.jsx";
 import Layout from "./components/layout/layout/Layout.jsx";
+import RoleRoute from "./routes/RoleRoute.jsx";
 
 import "./App.css";
 
@@ -37,7 +38,7 @@ function App() {
           <Route path="/activities" element={<Activities />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />
           <Route path="/board" element={<Board />} />
-          <Route path="/teachers" element={<TeachersRoom />} />
+          <Route path="/teachers" element={<RoleRoute allow={["teacher"]}><TeachersRoom /></RoleRoute>}/>
           <Route path="/profile" element={<Profile />} />
         </Route>
 
