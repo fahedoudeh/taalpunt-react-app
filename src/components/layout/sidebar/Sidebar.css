@@ -1,0 +1,24 @@
+/* src/components/layout/sidebar/Sidebar.css */
+.side { width: 260px; padding: 1rem; border-right: 1px solid #e5e7eb; background: #fff; }
+.side__section { margin-bottom: 1rem; }
+.side__title { font-size: .95rem; font-weight: 700; margin: 0 0 .5rem; color: #111827; }
+.side__stack { display: grid; gap: .5rem; }
+.side__btn {
+  display: block; text-align: center; padding: .5rem .6rem;
+  border: 1px solid #e5e7eb; background: #f8fafc; border-radius: 8px; text-decoration: none; color: #1f2937;
+}
+.side__btn:hover { background: #eef2f7; }
+.side__card { border: 1px solid #e5e7eb; border-radius: 8px; padding: .6rem; background: #fff; }
+.side__word { font-weight: 700; margin-bottom: .25rem; }
+.side__muted { color: #6b7280; font-size: .9rem; }
+.side__list { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.side__link { text-decoration: underline; color: #001489; }
+.side__row { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .25rem; }
+.side__label { color: #6b7280; font-size: .85rem; }
+.side__value { font-size: .9rem; color: #111827; }
+.side__actions { display: flex; gap: .5rem; margin-top: .5rem; }
+.side__linkbtn {
+  border: 1px solid #e5e7eb; background: #fff; padding: .4rem .6rem; border-radius: 8px;
+  text-decoration: none; color: #1f2937; cursor: pointer;
+}
+.side__linkbtn:hover { background: #f3f4f6; }
