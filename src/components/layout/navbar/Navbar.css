@@ -1,0 +1,20 @@
+/* src/components/layout/navbar/Navbar.css */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+.nav__brand { font-weight: 700; }
+.nav__links { display: flex; gap: 1rem; }
+.nav__actions { display: flex; gap: .75rem; align-items: center; }
+.nav__link { text-decoration: none; color: #1f2937; }
+.nav__link--active { text-decoration: underline; font-weight: 600; color: #001489; }
+.nav__btn {
+  border: 1px solid #e5e7eb; background: #f8fafc; padding: .4rem .7rem; border-radius: 8px;
+  cursor: pointer;
+}
+.nav__btn:hover { background: #eef2f7; }
