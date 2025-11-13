@@ -7,6 +7,7 @@ import LessonDetail from "./pages/lessonDetail/LessonDetail.jsx";
 import Activities from "./pages/activities/Activities.jsx";
 import ActivityDetail from "./pages/activityDetail/ActivityDetail.jsx";
 import Board from "./pages/board/Board.jsx";
+import MessageDetail from "./pages/messageDetail/MessageDetail.jsx";
 import TeachersRoom from "./pages/teachersRoom/TeachersRoom.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import NotFound from "./pages/notFound/NotFound.jsx";
@@ -38,6 +39,7 @@ function App() {
           <Route path="/activities" element={<Activities />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />
           <Route path="/board" element={<Board />} />
+          <Route path="/board/:id" element={<MessageDetail />} />
           <Route path="/teachers" element={<RoleRoute allow={["teacher"]}><TeachersRoom /></RoleRoute>}/>
           <Route path="/profile" element={<Profile />} />
         </Route>
