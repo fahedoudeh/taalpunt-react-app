@@ -1,0 +1,16 @@
+/* src/components/ui/loader/Loader.css */
+.loader {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .95rem;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid #ddd; border-top-color: #001489;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader__label { color: #333; }
