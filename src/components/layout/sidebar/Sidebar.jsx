@@ -4,6 +4,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import WordOfTheDay from "./WordOfTheDay";
 import ExpressionOfTheDay from "./ExpressionOfTheDay";
+import UpcomingSidebar from "./UpcomingSidebar";
 
 export default function Sidebar() {
   const { email, role, logout } = useAuth();
@@ -30,15 +31,8 @@ export default function Sidebar() {
       <WordOfTheDay />
       <ExpressionOfTheDay />
 
-      {/* Upcoming placeholder (U4) */}
-      <section className="side__section">
-        <h3 className="side__title">Binnenkort</h3>
-        <ul className="side__list">
-          <li className="side__muted">
-            Lessen & activiteiten verschijnen hier
-          </li>
-        </ul>
-      </section>
+      {/* Upcoming  (U4) */}
+      <UpcomingSidebar />
 
       {/* Profile mini-card */}
       <section className="side__section">
