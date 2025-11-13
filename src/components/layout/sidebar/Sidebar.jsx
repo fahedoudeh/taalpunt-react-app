@@ -2,6 +2,8 @@
 import "./Sidebar.css";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Link } from "react-router-dom";
+import WordOfTheDay from "./WordOfTheDay";
+import ExpressionOfTheDay from "./ExpressionOfTheDay";
 
 export default function Sidebar() {
   const { email, role, logout } = useAuth();
@@ -24,26 +26,11 @@ export default function Sidebar() {
         </div>
       </section>
 
-      {/* Today’s bits (placeholders; will wire in U2/U3) */}
-      <section className="side__section">
-        <h3 className="side__title">Woord van de dag</h3>
-        <div className="side__card">
-          <div className="side__word">—</div>
-          <div className="side__muted">
-            Klik straks voor betekenis & voorbeelden
-          </div>
-        </div>
-      </section>
+      {/* Day widgets */}
+      <WordOfTheDay />
+      <ExpressionOfTheDay />
 
-      <section className="side__section">
-        <h3 className="side__title">Uitdrukking van de dag</h3>
-        <div className="side__card">
-          <div className="side__word">—</div>
-          <div className="side__muted">Komt zo meteen tot leven</div>
-        </div>
-      </section>
-
-      {/* Upcoming (will wire in U4) */}
+      {/* Upcoming placeholder (U4) */}
       <section className="side__section">
         <h3 className="side__title">Binnenkort</h3>
         <ul className="side__list">
