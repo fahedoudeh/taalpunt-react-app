@@ -1,0 +1,8 @@
+.lessons { padding: 1rem; }
+.lessons__title { margin: 0 0 1rem; }
+.lessons__list { list-style: none; padding: 0; margin: 0; }
+.lessons__item { border-bottom: 1px solid #eee; }
+.lessons__link { display: flex; justify-content: space-between; padding: .75rem 0; text-decoration: none; }
+.lessons__name { font-weight: 600; }
+.lessons__date { color: #666; }
+
