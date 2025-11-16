@@ -1,0 +1,7 @@
+.lesson-detail { padding: 1rem; }
+.lesson-detail__back { display: inline-block; margin-bottom: .75rem; }
+.lesson-detail__title { margin: 0 0 .5rem; }
+.lesson-detail__meta { color: #666; margin-bottom: 1rem; }
+.lesson-detail__desc { line-height: 1.5; }
+.lesson-detail__hr { margin: 1.5rem 0; }
+.lesson-detail__muted { color: #666; }
