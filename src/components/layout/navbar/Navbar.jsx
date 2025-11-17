@@ -27,7 +27,7 @@ export default function Navbar() {
       {isAuth && (
         <div className="nav__links">
           <NavLink to="/" className={linkClass} end>
-            Dashboard
+            StartPagina
           </NavLink>
           <NavLink to="/lessons" className={linkClass}>
             Lessen
