@@ -1,108 +1,81 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getLessonById } from "../../services/lessonService";
+import { useAuth } from "../../contexts/AuthContext";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
-import { formatDate } from "../../helpers/formatDate";
-import { getHomework } from "../../services/homeworkService";
-import HomeworkForm from "../../components/lesson/homeworkForm/HomeworkForm";
-import "./LessonDetail.css";
+
+import TeacherHomeworkForm from "../../components/lesson/homeworkForm/TeacherHomeworkForm";
+import StudentHomeworkSubmit from "../../components/lesson/homeworkForm/StudentHomeworkSubmit";
+
+// TEMP: map of demo students from your config.json “users” data (ids 5..10)
+// Replace later with a real fetch of profiles/users.
+const DEMO_STUDENTS = [
+  { id: 5, label: "Jan de Vries" },
+  { id: 6, label: "Maria Santos" },
+  { id: 7, label: "Ahmed Hassan" },
+  { id: 8, label: "Anna Kowalski" },
+  { id: 9, label: "Carlos Rodriguez" },
+  { id: 10, label: "Fatima Al-Mansouri" },
+];
 
 export default function LessonDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const isTeacher = Array.isArray(user?.roles) && user.roles.includes("teacher");
+
   const [lesson, setLesson] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [hw, setHw] = useState([]);
-  const [hwLoading, setHwLoading] = useState(false);
-  const [hwErr, setHwErr] = useState("");
 
   useEffect(() => {
     (async () => {
-      setErr("");
-      setLoading(true);
+      setErr(""); setLoading(true);
       try {
         const res = await getLessonById(id);
-        setLesson(res?.data ?? null);
+        setLesson(res.data || null);
       } catch (e) {
-        if (e.code === "ECONNABORTED")
-          setErr("De server reageert traag. Probeer het zo nog eens.");
-        else setErr("Kon les niet laden.");
-        console.error("Lesson detail error:", e?.response?.data || e.message);
+        console.error("Lesson detail:", e?.response?.data || e.message);
+        setErr("Kon les niet laden.");
       } finally {
         setLoading(false);
       }
     })();
   }, [id]);
 
-  const fetchHomework = async () => {
-    setHwErr("");
-    setHwLoading(true);
-    try {
-      const res = await getHomework({ lessonId: id });
-      const list = Array.isArray(res?.data) ? res.data : [];
-      setHw(list);
-    } catch (e) {
-      if (e.code === "ECONNABORTED")
-        setHwErr("De server reageert traag. Probeer het zo nog eens.");
-      else setHwErr("Kon huiswerk niet laden.");
-      console.error("Homework list error:", e?.response?.data || e.message);
-    } finally {
-      setHwLoading(false);
-    }
-  };
-
-   useEffect(() => {
-     // existing fetch for lesson…
-     // then also fetch homework:
-     fetchHomework();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [id]);
-
-
   if (loading) return <Loader />;
   if (err) return <ErrorNotice message={err} />;
-  if (!lesson) return <ErrorNotice message="Les niet gevonden." />;
+  if (!lesson) return <p>Les niet gevonden.</p>;
 
   return (
-    <section className="lesson-detail">
-      <Link to="/lessons" className="lesson-detail__back">
-        ← Terug naar lessen
-      </Link>
-
-      <h1 className="lesson-detail__title">{lesson.title ?? "Les"}</h1>
-      <div className="lesson-detail__meta">
-        Datum: {formatDate(lesson.date, false)}
-      </div>
-
-      {lesson.description && (
-        <p className="lesson-detail__desc">{lesson.description}</p>
+    <section>
+      <p><Link to="/lessons">← Terug naar lessen</Link></p>
+      <h2>{lesson.title}</h2>
+      <p><strong>Datum:</strong> {lesson.date} • <strong>Tijd:</strong> {lesson.startTime}–{lesson.endTime}</p>
+      <p><strong>Locatie:</strong> {lesson.location}</p>
+      <p><strong>Niveau:</strong> {lesson.level}</p>
+      {lesson.materialsUrl && (
+        <p><a href={lesson.materialsUrl} target="_blank" rel="noreferrer">Lesmateriaal</a></p>
       )}
+      <p style={{ whiteSpace: "pre-wrap" }}>{lesson.description}</p>
 
-      <hr className="lesson-detail__hr" />
+      <hr style={{ margin: "1rem 0" }} />
 
-      <h2>Huiswerk</h2>
-      <HomeworkForm lessonId={id} onCreated={fetchHomework} />
-
-      {hwLoading && <div>Laden…</div>}
-      {hwErr && <div className="lesson-detail__muted">{hwErr}</div>}
-      {!hwLoading &&
-        !hwErr &&
-        (hw.length === 0 ? (
-          <p className="lesson-detail__muted">Geen huiswerk voor deze les.</p>
-        ) : (
-          <ul>
-            {hw.map((h) => (
-              <li key={h.id}>
-                <strong>{h.title}</strong>
-                {h.dueDate && (
-                  <> — inleveren op {formatDate(h.dueDate, false)}</>
-                )}
-                {h.description && <div>{h.description}</div>}
-              </li>
-            ))}
-          </ul>
-        ))}
+      {isTeacher ? (
+        <>
+          <h3>Huiswerk toevoegen</h3>
+          <TeacherHomeworkForm
+            lessonId={Number(id)}
+            students={DEMO_STUDENTS}
+            onCreated={() => {/* you can add a toast or small notice here */}}
+          />
+        </>
+      ) : (
+        <>
+          <h3>Huiswerk inleveren</h3>
+          <StudentHomeworkSubmit lessonId={Number(id)} />
+        </>
+      )}
     </section>
   );
 }
