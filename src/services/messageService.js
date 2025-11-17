@@ -10,3 +10,7 @@ export const updateMessage = (id, payload) =>
   api.put(`/messages/${id}`, payload);
 
 export const deleteMessage = (id) => api.delete(`/messages/${id}`);
+
+// Get only messages meant for teachers (teachersOnly = true)
+export const getTeacherMessages = async () => api.get("/messages", { params: { teachersOnly: true } });
+
