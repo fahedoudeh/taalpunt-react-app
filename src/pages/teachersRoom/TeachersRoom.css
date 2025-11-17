@@ -1,0 +1,420 @@
+/* =========================================
+   TEACHERS ROOM – DOCENTENKAMER
+   ========================================= */
+
+/* === Page wrapper === */
+
+.teachers-room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Header (title + welcome) */
+
+.teachers-room__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.teachers-room__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #001489;
+}
+
+.teachers-room__header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #606770;
+}
+
+/* =========================================
+   TABS – FACEBOOK-LIKE SUBNAV
+   ========================================= */
+
+.teachers-room__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background-color: #e4e6eb;
+  align-self: flex-start;
+}
+
+.teachers-room__tabs .tab {
+  border: none;
+  background: transparent;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #050505;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.06s ease;
+}
+
+.teachers-room__tabs .tab:hover {
+  background-color: #d0d4dc;
+}
+
+.teachers-room__tabs .tab--active {
+  background-color: #ffffff;
+  color: #001489;
+}
+
+/* =========================================
+   CONTENT WRAPPER
+   ========================================= */
+
+.teachers-room__content {
+  margin-top: 0.75rem;
+}
+
+/* Panels – shared card style */
+
+.teachers-room__overview,
+.teachers-room__lessons,
+.teachers-room__students,
+.teachers-room__homework,
+.teachers-room__activities {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dadde1;
+  padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Panel titles */
+
+.teachers-room__overview h2,
+.teachers-room__lessons h2,
+.teachers-room__students h2,
+.teachers-room__homework h2,
+.teachers-room__activities h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #050505;
+}
+
+/* =========================================
+   OVERVIEW TAB – DASHBOARD STATS
+   ========================================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background-color: #f5f6f7;
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  padding: 0.8rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.06s ease;
+}
+
+.stat-card:hover {
+  background-color: #f0f2f5;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.stat-card__value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #001489;
+}
+
+.stat-card__label {
+  font-size: 0.8rem;
+  color: #606770;
+}
+
+/* Quick actions */
+
+.quick-actions {
+  border-top: 1px solid #e4e6eb;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.quick-actions h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #050505;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* =========================================
+   LESSONS TAB – FORM + TABLE
+   ========================================= */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #050505;
+}
+
+/* Lesson form */
+
+.lesson-form {
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  padding: 0.9rem 1rem;
+  background-color: #f5f6f7;
+  margin-top: 0.75rem;
+}
+
+.lesson-form h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #050505;
+}
+
+.lesson-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.lesson-form input,
+.lesson-form textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccd0d5;
+  background-color: #ffffff;
+  color: #050505;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.lesson-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.lesson-form input:focus,
+.lesson-form textarea:focus {
+  outline: none;
+  border-color: #001489;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px #001489;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+/* Lessons table */
+
+.lessons-list {
+  margin-top: 0.75rem;
+}
+
+/* Base table styles – used for lessons & students */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.data-table thead {
+  background-color: #f5f6f7;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.55rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid #e4e6eb;
+}
+
+.data-table th {
+  font-weight: 600;
+  color: #606770;
+}
+
+.data-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f0f2f5;
+}
+
+/* =========================================
+   STUDENTS TAB – STATUS BADGES
+   ========================================= */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status--active {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.status--pending {
+  background-color: #fff4e5;
+  color: #b45309;
+}
+
+.status--reviewed {
+  background-color: #e0ecff;
+  color: #001489;
+}
+
+/* =========================================
+   HOMEWORK TAB – RESPONSIVE GRID
+   ========================================= */
+
+.homework-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.homework-card {
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  background-color: #f5f6f7;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.06s ease;
+}
+
+.homework-card:hover {
+  background-color: #f0f2f5;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.homework-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.homework-card__header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #050505;
+}
+
+.homework-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+/* =========================================
+   ACTIVITIES TAB – SIMPLE PANEL
+   ========================================= */
+
+.teachers-room__activities p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #606770;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 900px) {
+  /* Stats grid: 2 columns on medium screens */
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .homework-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Tabs full-width on mobile */
+  .teachers-room__tabs {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .teachers-room__tabs .tab {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  /* Compact padding on panels */
+  .teachers-room__overview,
+  .teachers-room__lessons,
+  .teachers-room__students,
+  .teachers-room__homework,
+  .teachers-room__activities {
+    padding: 12px;
+  }
+
+  /* Tables: make them more scroll-friendly on very small screens */
+  .data-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.45rem 0.4rem;
+  }
+}
