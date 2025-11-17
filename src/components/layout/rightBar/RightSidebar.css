@@ -1,0 +1,6 @@
+.right { display: flex; flex-direction: column; gap: .75rem; }
+.right__section { display: grid; gap: .75rem; }
+.right__card { background:#fff; border:1px solid #eaeaea; border-radius:12px; padding:.75rem; }
+.right__title { font-weight:600; margin-bottom:.25rem; }
+.right__list { margin:0; padding-left:1rem; }
+.right__link { text-decoration:none; }

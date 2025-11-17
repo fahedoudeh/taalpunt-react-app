@@ -1,24 +1,141 @@
-/* src/components/layout/sidebar/Sidebar.css */
-.side { width: 260px; padding: 1rem; border-right: 1px solid #e5e7eb; background: #fff; }
-.side__section { margin-bottom: 1rem; }
-.side__title { font-size: .95rem; font-weight: 700; margin: 0 0 .5rem; color: #111827; }
-.side__stack { display: grid; gap: .5rem; }
+/* Wrapper */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Generic card sections */
+
+.side__section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dadde1;
+  padding: 10px 12px;
+}
+
+.side__title {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #606770;
+}
+
+/* Quick actions */
+
+.side__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
 .side__btn {
-  display: block; text-align: center; padding: .5rem .6rem;
-  border: 1px solid #e5e7eb; background: #f8fafc; border-radius: 8px; text-decoration: none; color: #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.38rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid #e4e6eb;
+  background-color: #f0f2f5;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #111827;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.06s ease;
 }
-.side__btn:hover { background: #eef2f7; }
-.side__card { border: 1px solid #e5e7eb; border-radius: 8px; padding: .6rem; background: #fff; }
-.side__word { font-weight: 700; margin-bottom: .25rem; }
-.side__muted { color: #6b7280; font-size: .9rem; }
-.side__list { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
-.side__link { text-decoration: underline; color: #001489; }
-.side__row { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .25rem; }
-.side__label { color: #6b7280; font-size: .85rem; }
-.side__value { font-size: .9rem; color: #111827; }
-.side__actions { display: flex; gap: .5rem; margin-top: .5rem; }
+
+.side__btn:hover {
+  background-color: #e4e6eb;
+  border-color: #d0d4dc;
+  transform: translateY(-1px);
+}
+
+/* Profile card */
+
+.side__card {
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  background-color: #f5f6f7;
+  padding: 0.55rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.side__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.side__label {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.side__value {
+  font-size: 0.8rem;
+  color: #111827;
+  text-align: right;
+}
+
+.side__actions {
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .side__linkbtn {
-  border: 1px solid #e5e7eb; background: #fff; padding: .4rem .6rem; border-radius: 8px;
-  text-decoration: none; color: #1f2937; cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+  color: #001489;
+  cursor: pointer;
+  text-decoration: underline;
 }
-.side__linkbtn:hover { background: #f3f4f6; }
+
+.side__linkbtn--logout {
+  color: #b91c1c;
+}
+
+/* Navigation section */
+
+.side__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.side__navlink {
+  display: block;
+  padding: 0.3rem 0.45rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #111827;
+  font-size: 0.85rem;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.side__navlink:hover {
+  background-color: #f0f2f5;
+}
+
+.side__navlink--active {
+  background-color: #e0ecff;
+  color: #001489;
+  font-weight: 600;
+}
+
+/* Responsive tweak */
+
+@media (max-width: 900px) {
+  .side {
+    font-size: 0.85rem;
+  }
+}

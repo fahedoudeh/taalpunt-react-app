@@ -14,6 +14,7 @@ import NotFound from "./pages/notFound/NotFound.jsx";
 import PrivateRoute from "./routes/PrivateRoute.jsx";
 import Layout from "./components/layout/layout/Layout.jsx";
 import RoleRoute from "./routes/RoleRoute.jsx";
+import TeachersBoard from "./pages/teachersBoard/TeachersBoard";
 
 import "./App.css";
 
@@ -40,7 +41,22 @@ function App() {
           <Route path="/activities/:id" element={<ActivityDetail />} />
           <Route path="/board" element={<Board />} />
           <Route path="/board/:id" element={<MessageDetail />} />
-          <Route path="/teachers" element={<RoleRoute allow={["teacher"]}><TeachersRoom /></RoleRoute>}/>
+          <Route
+            path="/teachers"
+            element={
+              <RoleRoute allow={["teacher"]}>
+                <TeachersRoom />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teachers-board"
+            element={
+              <RoleRoute allowedRoles={["teacher", "admin"]}>
+                <TeachersBoard />
+              </RoleRoute>
+            }
+          />
           <Route path="/profile" element={<Profile />} />
         </Route>
 

@@ -1,0 +1,10 @@
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px; /* left | main | right */
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.layout__left {}
+.layout__main { min-height: 60vh; }
+.layout__right {}

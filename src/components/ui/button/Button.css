@@ -1,0 +1,117 @@
+/* Base button */
+.tp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px; /* pill-like, social style */
+
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  background-color: transparent;
+  color: #001489;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.06s ease;
+}
+
+.tp-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 20, 137, 0.25);
+}
+
+/* Sizes */
+.tp-btn--sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.tp-btn--md {
+  padding: 0.55rem 1.1rem;
+}
+
+.tp-btn--lg {
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+}
+
+.tp-btn--full {
+  width: 100%;
+}
+
+/* Primary: oranjerood accent (#FF4500) */
+.tp-btn--primary {
+  background-color: #ff4500;
+  border-color: #ff4500;
+  color: #ffffff;
+}
+
+.tp-btn--primary:hover:not(:disabled) {
+  background-color: #e13e00;
+  border-color: #e13e00;
+  transform: translateY(-1px);
+}
+
+.tp-btn--primary:active:not(:disabled) {
+  background-color: #c73700;
+  border-color: #c73700;
+  transform: translateY(0);
+}
+
+/* Secondary: outlined marineblauw (#001489) */
+.tp-btn--secondary {
+  background-color: #ffffff;
+  border-color: #001489;
+  color: #001489;
+}
+
+.tp-btn--secondary:hover:not(:disabled) {
+  background-color: #e8efff;
+}
+
+.tp-btn--secondary:active:not(:disabled) {
+  background-color: #d5e0ff;
+}
+
+/* Ghost: subtle, for text-ish actions */
+.tp-btn--ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: #001489;
+}
+
+.tp-btn--ghost:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+/* Danger: for destructive actions (delete) */
+.tp-btn--danger {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.tp-btn--danger:hover:not(:disabled) {
+  background-color: #991b1b;
+  border-color: #991b1b;
+}
+
+/* Disabled state */
+.tp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

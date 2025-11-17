@@ -1,21 +1,39 @@
 import api from "./api";
 
-/** GET /homework */
-export const getHomework = (params) => api.get("/homework", { params });
+// ---------- HOMEWORK (assignments) ----------
 
-/** GET /homework/:id */
-export const getHomeworkById = (id) => api.get(`/homework/${id}`);
+// Get all homework rows (for teacher overview, stats, etc.)
+export const getHomework = async () => {
+  return api.get("/homework");
+};
 
-/** POST /homework */
-export const createHomework = (payload) => api.post("/homework", payload);
+// Get homework for a specific lesson (e.g. on lesson detail page)
+export const getHomeworkByLesson = async (lessonId) => {
+  // returns all homework rows for a lesson (usually 0 or 1)
+  return api.get("/homework", { params: { lessonId } });
+};
 
-/** PUT /homework/:id */
-export const updateHomework = (id, payload) =>
-  api.put(`/homework/${id}`, payload);
+// Create homework assignment
+// payload: { title, description, dueDate, lessonId, ... }
+export const createHomework = async (payload) => {
+  return api.post("/homework", payload);
+};
 
-/** PATCH /homework/:id */
-export const patchHomework = (id, payload) =>
-  api.patch(`/homework/${id}`, payload);
+// ---------- SUBMISSIONS (student deliveries) ----------
 
-/** DELETE /homework/:id */
-export const deleteHomework = (id) => api.delete(`/homework/${id}`);
+// Get all submissions (optional, for later teacher features)
+export const getSubmissions = async () => {
+  return api.get("/submissions");
+};
+
+// Get submissions filtered by homework + student
+export const getSubmissionsByHomeworkAndStudent = async (
+  homeworkId,
+  studentId
+) => {
+  return api.get("/submissions", { params: { homeworkId, studentId } });
+};
+export const createSubmission = async (payload) => {
+  // { id, homeworkId, studentId, submissionUrl }
+  return api.post(`/submissions`, payload);
+};
