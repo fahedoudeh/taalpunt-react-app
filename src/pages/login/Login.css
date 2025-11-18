@@ -1,0 +1,236 @@
+/* ===== Page wrapper – center content, gradient background ===== */
+
+.auth-page {
+  min-height: calc(100vh - 72px); /* adjust if your navbar is higher/lower */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: radial-gradient(circle at top, #eef2ff 0, #f3f4f6 40%, #e5e7eb 100%);
+}
+
+/* ===== Shell: keeps everything aligned, but NO white card ===== */
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+/* ===== Header: Taalpunt + slogan ===== */
+
+.auth-header {
+  margin-bottom: 1.6rem;
+}
+
+.auth-logo {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.auth-logo-main {
+  color: #001489; /* Taalpunt blauw */
+}
+
+.auth-logo-accent {
+  color: #ff4500; /* Taalpunt oranje/rood */
+}
+
+.auth-tagline {
+  margin: 0;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.auth-intro {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* ===== Form – floating inputs, no card background ===== */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+/* Labels + fields */
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.auth-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  padding-left: 0.3rem;
+}
+
+/* Floating pill inputs */
+
+.auth-input {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  outline: none;
+  background-color: #ffffff;
+  box-shadow: 0 4px 0 rgba(15, 23, 42, 0.06);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease,
+    background-color 0.15s ease;
+}
+
+.auth-input:focus {
+  border-color: #001489;
+  background-color: #ffffff;
+  box-shadow: 0 6px 0 rgba(0, 20, 137, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Hint under password (used in Register) */
+
+.auth-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ===== Role radio group (Register) ===== */
+
+.auth-fieldset {
+  border: none;
+  padding: 0.3rem 0 0.2rem;
+  margin: 0.4rem 0 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.auth-legend {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  padding-left: 0.3rem;
+  margin-bottom: 0.1rem;
+}
+
+.auth-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  color: #4b5563;
+}
+
+.auth-radio input[type="radio"] {
+  accent-color: #001489;
+}
+
+/* ===== Messages (error / success) ===== */
+
+.auth-message {
+  font-size: 0.82rem;
+  margin: 0.25rem 0 0.1rem;
+  text-align: left;
+  padding-left: 0.3rem;
+}
+
+.auth-message--error {
+  color: #b91c1c;
+}
+
+.auth-message--success {
+  color: #15803d;
+}
+
+/* ===== Button – pill, 3D-ish like Duolingo ===== */
+
+.auth-button {
+  margin-top: 0.4rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.7rem 1.3rem;
+  width: 100%;
+  background-color: #ff4500;
+  color: #ffffff;
+  box-shadow:
+    0 8px 0 rgba(148, 27, 0, 0.5),
+    0 12px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  transition:
+    background-color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.08s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: #e03d00;
+  box-shadow:
+    0 6px 0 rgba(148, 27, 0, 0.5),
+    0 10px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
+}
+
+.auth-button:active:not(:disabled) {
+  box-shadow:
+    0 3px 0 rgba(148, 27, 0, 0.5),
+    0 5px 12px rgba(0, 0, 0, 0.35);
+  transform: translateY(3px);
+}
+
+.auth-button:disabled {
+  opacity: 0.8;
+  cursor: default;
+  box-shadow: 0 4px 0 rgba(148, 27, 0, 0.3);
+}
+
+/* ===== Footer link under form ===== */
+
+.auth-footer-text {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  color: #4b5563;
+}
+
+.auth-link {
+  color: #001489;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== Responsive tweaks ===== */
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 2rem 1.25rem;
+  }
+
+  .auth-logo {
+    font-size: 1.8rem;
+  }
+
+  .auth-card {
+    max-width: 360px;
+  }
+}

@@ -1,46 +1,47 @@
 import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-// DRY service instead of axios directly
 import { loginRequest } from "../../services/authService";
 import { useAuth } from "../../contexts/AuthContext";
 import { jwtDecode } from "jwt-decode";
-
+import Button from "../../components/ui/button/Button";
+import "./Login.css"
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-
   const location = useLocation();
-
   const { login } = useAuth();
 
-  // if user came from a protected route, this will be set by <PrivateRoute />
   const from = location.state?.from?.pathname || "/";
+
   async function handleSubmit(e) {
     e.preventDefault();
     setErr("");
     setLoading(true);
 
     try {
-      // shared api client adds headers/token/timeout
       const res = await loginRequest({ email, password });
 
-      // The NOVI API usually returns token:
       const token = res.data?.token || res.data?.jwt;
       if (!token) throw new Error("Geen token in response.");
+
       const decodedT = jwtDecode(token);
-      console.log("payload of the token" , decodedT)
+      console.log("payload of the token", decodedT);
+
       login(token);
-      navigate(from, { replace: true }); // go to Dashboard on first login or the location where the user was before redirected to login
+      navigate(from, { replace: true });
     } catch (e) {
-      // timeout-friendly message
-      if (e.code === "ECONNABORTED")
+      if (e.code === "ECONNABORTED") {
         setErr("De server reageert traag. Probeer het zo nog eens.");
-      else if (e?.response?.status === 401) setErr("Onjuiste inloggegevens.");
-      else setErr("Inloggen mislukt. Probeer opnieuw.");
+      } else if (e?.response?.status === 401) {
+        setErr("Onjuiste inloggegevens.");
+      } else {
+        setErr("Inloggen mislukt. Probeer opnieuw.");
+      }
       console.error("Login error:", e?.response?.data || e.message);
     } finally {
       setLoading(false);
@@ -48,39 +49,72 @@ export default function Login() {
   }
 
   return (
-    <div className="login-page">
-      <h2>Inloggen</h2>
-      <form onSubmit={handleSubmit} className="login-form">
-        <label htmlFor="email">E-mail</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="username"
-        />
+    <div className="auth-page">
+      <div className="auth-card">
+        <header className="auth-header">
+          <div className="auth-logo">
+            <span className="auth-logo-main">Taal</span>
+            <span className="auth-logo-accent">punt</span>
+          </div>
+          <p className="auth-tagline">
+            Koffie, thee en taal – een goed verhaal.
+          </p>
+          <p className="auth-intro">
+            Log in om je lessen, activiteiten en het Taalpunt-board te zien.
+          </p>
+        </header>
 
-        <label htmlFor="password">Wachtwoord</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-        />
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          <div className="auth-field">
+            <label htmlFor="email" className="auth-label">
+              E-mail
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="auth-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="username"
+            />
+          </div>
 
-        {err && <p style={{ color: "crimson" }}>{err}</p>}
+          <div className="auth-field">
+            <label htmlFor="password" className="auth-label">
+              Wachtwoord
+            </label>
+            <input
+              id="password"
+              type="password"
+              className="auth-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Bezig…" : "Inloggen"}
-        </button>
-      </form>
+          {err && <p className="auth-message auth-message--error">{err}</p>}
 
-      <p style={{ marginTop: 12 }}>
-        Nog geen account? <Link to="/register">Maak er één aan</Link>
-      </p>
+          <Button
+            type="submit"
+            variant="accent"
+            size="lg"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? "Bezig…" : "Inloggen"}
+          </Button>
+        </form>
+
+        <p className="auth-footer-text">
+          Nog geen account?{" "}
+          <Link to="/register" className="auth-link">
+            Maak er één aan
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

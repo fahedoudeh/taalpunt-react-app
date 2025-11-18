@@ -1,0 +1,77 @@
+/* src/pages/activityDetail/ActivityDetail.css */
+
+.activity-detail-page {
+  padding: 1.5rem;
+}
+
+.activity-detail-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem 1.8rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.activity-detail-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.activity-detail-date {
+  margin: 0 0 0.2rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.activity-detail-title {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #0f172a;
+}
+
+.activity-detail-meta {
+  margin: 0.4rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.activity-detail-body {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.activity-detail-footer {
+  margin-top: 1rem;
+}
+
+.activity-detail-backlink {
+  font-size: 0.9rem;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.activity-detail-backlink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .activity-detail-page {
+    padding: 1rem;
+  }
+
+  .activity-detail-card {
+    padding: 1.2rem 1.3rem;
+  }
+
+  .activity-detail-title {
+    font-size: 1.4rem;
+  }
+}

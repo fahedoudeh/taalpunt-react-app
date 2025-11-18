@@ -115,3 +115,29 @@
   box-shadow: none;
   transform: none;
 }
+
+.tp-btn--accent {
+  background-color: #ff4500;
+  border-color: #ff4500;
+  color: #ffffff;
+  box-shadow:
+    0 8px 0 rgba(148, 27, 0, 0.5),
+    0 12px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+}
+
+.tp-btn--accent:hover:not(:disabled) {
+  background-color: #e13e00;
+  border-color: #e13e00;
+  box-shadow:
+    0 6px 0 rgba(148, 27, 0, 0.5),
+    0 10px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
+}
+
+.tp-btn--accent:active:not(:disabled) {
+  box-shadow:
+    0 3px 0 rgba(148, 27, 0, 0.5),
+    0 5px 12px rgba(0, 0, 0, 0.35);
+  transform: translateY(3px);
+}

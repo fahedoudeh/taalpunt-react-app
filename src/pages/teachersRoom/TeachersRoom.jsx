@@ -141,32 +141,67 @@ export default function TeachersRoom() {
   // Handle lesson operations
   const handleCreateLesson = async (lessonData) => {
     try {
-      const { data } = await createLesson({
-        ...lessonData,
-        teacherId: user.id,
-        createdAt: new Date().toISOString(),
+      // The date from input type="date" is already in YYYY-MM-DD format
+      // No conversion needed!
+
+      const payload = {
+        title: lessonData.title,
+        description: lessonData.description,
+        date: lessonData.date, // Keep as string in YYYY-MM-DD format
+        startTime: lessonData.startTime,
+        endTime: lessonData.endTime,
+        location: lessonData.location,
+        level: lessonData.level,
+        materialsUrl: lessonData.materialsUrl || "",
+        teacherId: Number(user.id),
+      };
+
+      console.log("Sending payload:", payload);
+      console.log("Date format check:", {
+        date: payload.date,
+        dateType: typeof payload.date, // Should be "string"
+        dateFormat: "Should be YYYY-MM-DD",
       });
+
+      const { data } = await createLesson(payload);
       setLessons([data, ...lessons]);
       setShowLessonForm(false);
+      setError("");
     } catch (err) {
-      setError("Kon les niet aanmaken.");
       console.error("Create lesson error:", err);
+      if (err.response) {
+        console.error("Error response data:", err.response.data);
+      }
+      setError("Kon les niet aanmaken.");
     }
   };
 
-  const handleUpdateLesson = async (lessonId, lessonData) => {
-    try {
-      await updateLesson(lessonId, lessonData);
-      setLessons(
-        lessons.map((l) => (l.id === lessonId ? { ...l, ...lessonData } : l))
-      );
-      setEditingLesson(null);
-    } catch (err) {
-      setError("Kon les niet bijwerken.");
-      console.error("Update lesson error:", err);
-    }
-  };
+ const handleUpdateLesson = async (lessonId, lessonData) => {
+   try {
+     const payload = {
+       title: lessonData.title,
+       description: lessonData.description,
+       date: lessonData.date, // Keep as string YYYY-MM-DD
+       startTime: lessonData.startTime,
+       endTime: lessonData.endTime,
+       location: lessonData.location,
+       level: lessonData.level,
+       materialsUrl: lessonData.materialsUrl || "",
+       teacherId: Number(user.id),
+     };
 
+     await updateLesson(lessonId, payload);
+     setLessons(
+       lessons.map((l) => (l.id === lessonId ? { ...l, ...payload } : l))
+     );
+     setEditingLesson(null);
+     setShowLessonForm(false);
+     setError("");
+   } catch (err) {
+     console.error("Update lesson error:", err);
+     setError("Kon les niet bijwerken.");
+   }
+ };
   const handleDeleteLesson = async (lessonId) => {
     if (!window.confirm("Weet je zeker dat je deze les wilt verwijderen?"))
       return;
@@ -242,8 +277,11 @@ export default function TeachersRoom() {
                 title: formData.get("title"),
                 description: formData.get("description"),
                 date: formData.get("date"),
-                duration: formData.get("duration"),
+                startTime: formData.get("startTime"),
+                endTime: formData.get("endTime"),
                 location: formData.get("location"),
+                level: formData.get("level"),
+                materialsUrl: formData.get("materialsUrl") || "",
               };
 
               if (editingLesson) {
@@ -267,22 +305,45 @@ export default function TeachersRoom() {
             />
             <input
               name="date"
-              type="datetime-local"
-              defaultValue={editingLesson?.date}
+              type="date"
+              defaultValue={editingLesson?.date?.split("T")[0]}
               required
             />
             <input
-              name="duration"
-              type="number"
-              placeholder="Duur (minuten)"
-              defaultValue={editingLesson?.duration || 60}
+              name="startTime"
+              type="time"
+              placeholder="Start tijd"
+              defaultValue={editingLesson?.startTime || "10:00"}
               required
             />
+            <input
+              name="endTime"
+              type="time"
+              placeholder="Eind tijd"
+              defaultValue={editingLesson?.endTime || "12:00"}
+              required
+            />
+            <select
+              name="level"
+              defaultValue={editingLesson?.level || "A1"}
+              required
+            >
+              <option value="A1">A1 - Beginner</option>
+              <option value="A2">A2 - Basis</option>
+              <option value="B1">B1 - Midden</option>
+              <option value="B2">B2 - Gevorderd</option>
+            </select>
             <input
               name="location"
               placeholder="Locatie"
               defaultValue={editingLesson?.location}
               required
+            />
+            <input
+              name="materialsUrl"
+              type="url"
+              placeholder="Link naar materiaal (optioneel)"
+              defaultValue={editingLesson?.materialsUrl}
             />
             <div className="form-actions">
               <Button type="submit">
@@ -322,7 +383,11 @@ export default function TeachersRoom() {
                 <tr key={lesson.id}>
                   <td>{lesson.title}</td>
                   <td>{new Date(lesson.date).toLocaleString("nl-NL")}</td>
-                  <td>{lesson.duration} min</td>
+                  <td>
+                    {lesson.startTime && lesson.endTime
+                      ? `${lesson.startTime}–${lesson.endTime}`
+                      : "—"}
+                  </td>
                   <td>{lesson.location}</td>
                   <td>
                     <Button
@@ -417,7 +482,7 @@ export default function TeachersRoom() {
                 Ingeleverd:{" "}
                 {new Date(submission.submittedAt).toLocaleString("nl-NL")}
               </p>
-              {!submission.reviewed && <Button size="small">Beoordelen</Button>}
+              {!submission.reviewed && <Button size="sm">Beoordelen</Button>}
             </div>
           ))}
         </div>
