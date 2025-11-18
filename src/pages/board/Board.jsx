@@ -6,16 +6,20 @@ import {
   updateMessage,
   deleteMessage,
 } from "../../services/messageService";
+
 import PostForm from "../../components/board/postForm/PostForm";
 import PostCard from "../../components/board/postCard/PostCard";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
+import Modal from "../../components/ui/modal/Modal";
+
 import "./Board.css";
 
 export default function Board() {
   const { user } = useAuth();
+
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,19 +27,31 @@ export default function Board() {
   const [editingMessage, setEditingMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Helper: get numeric user id from AuthContext
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   const getNumericUserId = () => {
     if (!user) return undefined;
     return Number(user.id ?? user.userId);
   };
 
-  // Fetch messages
+  const sortMessages = (arr) => {
+    if (!Array.isArray(arr)) return [];
+    return [...arr].sort((a, b) => {
+      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (db !== da) return db - da;
+      const ida = typeof a.id === "number" ? a.id : 0;
+      const idb = typeof b.id === "number" ? b.id : 0;
+      return idb - ida;
+    });
+  };
+
   const fetchMessages = async () => {
     setError("");
     setLoading(true);
     try {
       const { data } = await getMessages();
-      setMessages(Array.isArray(data) ? data : []);
+      setMessages(sortMessages(Array.isArray(data) ? data : []));
     } catch (e) {
       if (e.code === "ECONNABORTED") {
         setError("De server reageert traag. Probeer het zo nog eens.");
@@ -44,7 +60,7 @@ export default function Board() {
       } else {
         setError("Kon berichten niet laden.");
       }
-      console.error("Messages error:", e?.response?.data || e.message);
+      console.error("Board messages error:", e?.response?.data || e.message);
     } finally {
       setLoading(false);
     }
@@ -54,59 +70,61 @@ export default function Board() {
     fetchMessages();
   }, []);
 
-  // Handle create/update message
+  const sortedMessages = sortMessages(messages);
+  const visibleMessages = sortedMessages.filter(
+    (msg) => !Boolean(msg.teachersOnly)
+  );
+
   const handleSubmitMessage = async (formData) => {
     setSubmitting(true);
     setError("");
 
     try {
       const numericUserId = getNumericUserId();
-
       if (!numericUserId) {
         throw new Error("Geen geldige gebruiker gevonden voor authorId.");
       }
 
+      const teachersOnlyFlag = false;
+
       if (editingMessage) {
-        // Update existing message
         const payload = {
-          id: editingMessage.id, // required by your config on PUT
+          id: editingMessage.id,
           title: formData.title,
           content: formData.content,
           type: formData.type,
           tags: formData.tags,
-          teachersOnly: Boolean(formData.teachersOnly),
+          teachersOnly: teachersOnlyFlag,
           authorId: editingMessage.authorId ?? numericUserId,
         };
 
         await updateMessage(editingMessage.id, payload);
 
-        setMessages(
-          messages.map((msg) =>
-            msg.id === editingMessage.id
-              ? {
-                  ...msg,
-                  ...payload,
-                  updatedAt: new Date().toISOString(),
-                }
-              : msg
+        setMessages((prev) =>
+          sortMessages(
+            prev.map((msg) =>
+              msg.id === editingMessage.id
+                ? { ...msg, ...payload, updatedAt: new Date().toISOString() }
+                : msg
+            )
           )
         );
+
         setEditingMessage(null);
       } else {
-        // Create new message
         const payload = {
           title: formData.title,
           content: formData.content,
           type: formData.type,
           tags: formData.tags,
-          teachersOnly: Boolean(formData.teachersOnly),
-          authorId: numericUserId, // required by your config
+          teachersOnly: teachersOnlyFlag,
+          authorId: numericUserId,
           author: user?.email,
           createdAt: new Date().toISOString(),
         };
 
         const { data } = await createMessage(payload);
-        setMessages([data, ...messages]);
+        setMessages((prev) => sortMessages([data, ...prev]));
       }
 
       setShowForm(false);
@@ -116,35 +134,38 @@ export default function Board() {
           ? "Kon bericht niet bijwerken. Probeer het opnieuw."
           : "Kon bericht niet plaatsen. Probeer het opnieuw."
       );
-      console.error("Submit error:", e?.response?.data || e.message);
+      console.error("Board submit error:", e?.response?.data || e.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Handle delete message
-  const handleDeleteMessage = async (messageId) => {
-    if (!window.confirm("Weet je zeker dat je dit bericht wilt verwijderen?")) {
-      return;
-    }
+  const handleDeleteClick = (message) => {
+    setDeleteTarget(message);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const messageId = deleteTarget.id;
     setError("");
+
     try {
       await deleteMessage(messageId);
-      setMessages(messages.filter((msg) => msg.id !== messageId));
+      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
     } catch (e) {
       setError("Kon bericht niet verwijderen. Probeer het opnieuw.");
-      console.error("Delete error:", e?.response?.data || e.message);
+      console.error("Board delete error:", e?.response?.data || e.message);
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
-  // Handle edit button click
   const handleEditMessage = (message) => {
     setEditingMessage(message);
     setShowForm(true);
   };
 
-  // Handle cancel form
   const handleCancelForm = () => {
     setShowForm(false);
     setEditingMessage(null);
@@ -152,62 +173,86 @@ export default function Board() {
 
   if (loading) return <Loader label="Berichten laden..." />;
 
+  const numericUserId = getNumericUserId();
+  const role = user?.role;
+  const roles = user?.roles || [];
+  const isAdmin = role === "admin" || roles.includes("admin");
+
   return (
     <div className="board">
-      <div className="board__header">
-        <h1 className="board__title">Community Board</h1>
-        {!showForm && (
-          <Button onClick={() => setShowForm(true)} variant="primary">
-            Nieuw bericht
-          </Button>
-        )}
-      </div>
+      <div className="board__inner">
+        <div className="board__header">
+          <div>
+            <h1 className="board__title">Community board</h1>
+            <p className="board__subtitle">
+              Deel vragen, tips en ervaringen met iedereen in het Taalpunt.
+            </p>
+          </div>
 
-      {error && <ErrorNotice message={error} />}
-
-      {/* Message Form */}
-      {showForm && (
-        <div className="board__form-container">
-          <PostForm
-            initialData={editingMessage}
-            onSubmit={handleSubmitMessage}
-            onCancel={handleCancelForm}
-            isSubmitting={submitting}
-          />
+          {!showForm && (
+            <Button onClick={() => setShowForm(true)} variant="primary">
+              Nieuw bericht
+            </Button>
+          )}
         </div>
-      )}
 
-      {/* Messages List */}
-      <div className="board__messages">
-        {messages.length === 0 ? (
-          <EmptyState
-            title="Nog geen berichten"
-            message="Wees de eerste om een bericht te plaatsen!"
-            actionLabel="Plaats eerste bericht"
-            onClick={() => setShowForm(true)}
-          />
-        ) : (
-          <div className="board__grid">
-            {messages.map((message) => {
-              const numericUserId = getNumericUserId();
-              const isOwner =
-                numericUserId &&
-                (message.authorId === numericUserId ||
-                  message.userId === numericUserId); // fallback for older data
+        {error && <ErrorNotice message={error} />}
 
-              return (
-                <PostCard
-                  key={message.id}
-                  message={message}
-                  onEdit={() => handleEditMessage(message)}
-                  onDelete={() => handleDeleteMessage(message.id)}
-                  canEdit={isOwner || user?.role === "teacher"}
-                  canDelete={isOwner || user?.role === "teacher"}
-                />
-              );
-            })}
+        {showForm && (
+          <div className="board__form-container">
+            <PostForm
+              initialData={editingMessage || undefined}
+              onSubmit={handleSubmitMessage}
+              onCancel={handleCancelForm}
+              isSubmitting={submitting}
+              context="community"
+            />
           </div>
         )}
+
+        <div className="board__messages">
+          {visibleMessages.length === 0 ? (
+            <EmptyState
+              title="Nog geen berichten"
+              message="Wees de eerste die iets deelt met de groep."
+              actionLabel="Eerste bericht plaatsen"
+              onClick={() => setShowForm(true)}
+            />
+          ) : (
+            <div className="board__grid">
+              {visibleMessages.map((message) => {
+                const isOwner =
+                  numericUserId &&
+                  (message.authorId === numericUserId ||
+                    message.userId === numericUserId);
+
+                const canEdit = isOwner || isAdmin;
+                const canDelete = isOwner || isAdmin;
+
+                return (
+                  <PostCard
+                    key={message.id}
+                    message={message}
+                    onEdit={() => handleEditMessage(message)}
+                    onDelete={() => handleDeleteClick(message)}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <Modal
+          isOpen={Boolean(deleteTarget)}
+          title="Bericht verwijderen"
+          message="Weet je zeker dat je dit bericht wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+          confirmLabel="Ja, verwijderen"
+          cancelLabel="Annuleren"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       </div>
     </div>
   );

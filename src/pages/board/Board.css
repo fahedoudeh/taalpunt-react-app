@@ -1,0 +1,71 @@
+.board {
+  display: flex;
+  justify-content: center;
+  padding: 0 1.5rem 1.5rem;
+}
+
+/* Shared inner container: header + messages + form */
+.board__inner {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Header */
+.board__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.board__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.board__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+/* Form */
+.board__form-container {
+  margin-bottom: 1rem;
+}
+
+/* Messages */
+.board__messages {
+  display: flex;
+  justify-content: center;
+}
+
+.board__grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Make cards fill the feed width */
+.board__grid .post-card {
+  width: 100%;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .board {
+    padding: 0.5rem;
+  }
+
+  .board__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .board__inner {
+    max-width: 100%;
+  }
+}

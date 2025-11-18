@@ -1,3 +1,4 @@
+// src/components/board/postForm/PostForm.jsx
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../contexts/AuthContext";
 import Button from "../../ui/button/Button";
@@ -8,10 +9,24 @@ export default function PostForm({
   onSubmit,
   onCancel,
   isSubmitting,
+  context = "community", // "community" | "teachers"
 }) {
   const { user } = useAuth();
-  const isTeacher = user?.role === "teacher";
-  const isEditing = Boolean(initialData);
+
+  const role = user?.role;
+  const roles = user?.roles || [];
+  const isTeacherLike =
+    role === "teacher" ||
+    role === "docent" ||
+    role === "admin" ||
+    roles.includes("teacher") ||
+    roles.includes("docent") ||
+    roles.includes("admin");
+
+  const isTeacherContext = context === "teachers";
+
+  // Alleen "bewerken" als we echt een id hebben
+  const isEditing = Boolean(initialData && initialData.id);
 
   const {
     register,
@@ -23,7 +38,6 @@ export default function PostForm({
       content: initialData?.content || "",
       type: initialData?.type || "Tip",
       tags: initialData?.tags || "",
-      teachersOnly: initialData?.teachersOnly || false,
     },
   });
 
@@ -33,8 +47,9 @@ export default function PostForm({
       content: data.content.trim(),
       type: data.type.trim(),
       tags: data.tags.trim(),
-      teachersOnly: Boolean(data.teachersOnly),
+      // geen teachersOnly meer in dit formulier
     };
+
     onSubmit(formData);
   };
 
@@ -48,6 +63,7 @@ export default function PostForm({
         {isEditing ? "Bericht bewerken" : "Nieuw bericht"}
       </h2>
 
+      {/* Titel */}
       <div className="post-form__field">
         <label htmlFor="title" className="post-form__label">
           Titel *
@@ -75,6 +91,7 @@ export default function PostForm({
         )}
       </div>
 
+      {/* Type */}
       <div className="post-form__field">
         <label htmlFor="type" className="post-form__label">
           Type bericht *
@@ -93,12 +110,18 @@ export default function PostForm({
           <option value="Aankondiging">📢 Aankondiging</option>
           <option value="Hulp gezocht">🤝 Hulp gezocht</option>
           <option value="Discussie">💬 Discussie</option>
+
+          {/* Notulen – alleen voor docenten/admin en alleen in teachers context */}
+          {isTeacherLike && isTeacherContext && (
+            <option value="Notulen">📝 Notulen</option>
+          )}
         </select>
         {errors.type && (
           <span className="post-form__error">{errors.type.message}</span>
         )}
       </div>
 
+      {/* Inhoud */}
       <div className="post-form__field">
         <label htmlFor="content" className="post-form__label">
           Inhoud *
@@ -127,6 +150,7 @@ export default function PostForm({
         )}
       </div>
 
+      {/* Tags */}
       <div className="post-form__field">
         <label htmlFor="tags" className="post-form__label">
           Tags (optioneel)
@@ -148,19 +172,7 @@ export default function PostForm({
         )}
       </div>
 
-      {isTeacher && (
-        <div className="post-form__field post-form__field--checkbox">
-          <label className="post-form__checkbox-label">
-            <input
-              type="checkbox"
-              className="post-form__checkbox"
-              {...register("teachersOnly")}
-            />
-            <span>Alleen zichtbaar voor docenten</span>
-          </label>
-        </div>
-      )}
-
+      {/* Acties */}
       <div className="post-form__actions">
         <Button
           type="button"
