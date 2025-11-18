@@ -7,19 +7,18 @@ function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
 
   // Try to be flexible with possible field names
   const title = message.title || message.subject || "Bericht";
-
   const content = message.body || message.content || message.text || "";
-
   const author =
     message.author ||
     message.username ||
     message.userEmail ||
     "Onbekende schrijver";
-
   const createdAt = message.createdAt || message.created_at;
   const updatedAt = message.updatedAt || message.updated_at;
-
   const hasBeenUpdated = Boolean(updatedAt && updatedAt !== createdAt);
+
+  const type = message.type || null;
+  const teachersOnly = Boolean(message.teachersOnly);
 
   return (
     <article className="post-card">
@@ -28,9 +27,15 @@ function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
           <h2 className="post-card__title">{title}</h2>
           <div className="post-card__meta">
             <span className="post-card__author">{author}</span>
+
             {createdAt && (
               <span className="post-card__date">· {formatDate(createdAt)}</span>
             )}
+
+            {type && <span className="post-card__type"> · {type}</span>}
+
+            {teachersOnly && <span className="post-card__badge">Docenten</span>}
+
             {hasBeenUpdated && (
               <span className="post-card__badge">Bewerkt</span>
             )}
@@ -49,7 +54,6 @@ function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
               Bewerken
             </Button>
           )}
-
           {canDelete && (
             <Button variant="danger" size="sm" onClick={onDelete}>
               Verwijderen

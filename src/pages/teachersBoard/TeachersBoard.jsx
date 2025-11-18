@@ -12,6 +12,8 @@ import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
+import Modal from "../../components/ui/modal/Modal";
+
 import "./TeachersBoard.css";
 
 export default function TeachersBoard() {
@@ -24,18 +26,31 @@ export default function TeachersBoard() {
   const [editingMessage, setEditingMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   const getNumericUserId = () => {
     if (!user) return undefined;
     return Number(user.id ?? user.userId);
   };
 
-  // Fetch teacher-only messages
+  const sortMessages = (arr) => {
+    if (!Array.isArray(arr)) return [];
+    return [...arr].sort((a, b) => {
+      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (db !== da) return db - da;
+      const ida = typeof a.id === "number" ? a.id : 0;
+      const idb = typeof b.id === "number" ? b.id : 0;
+      return idb - ida;
+    });
+  };
+
   const fetchMessages = async () => {
     setError("");
     setLoading(true);
     try {
       const { data } = await getTeacherMessages();
-      setMessages(Array.isArray(data) ? data : []);
+      setMessages(sortMessages(Array.isArray(data) ? data : []));
     } catch (e) {
       if (e.code === "ECONNABORTED") {
         setError("De server reageert traag. Probeer het zo nog eens.");
@@ -54,11 +69,9 @@ export default function TeachersBoard() {
     fetchMessages();
   }, []);
 
-  // Create / update teacher-only message
   const handleSubmitMessage = async (formData) => {
     setSubmitting(true);
     setError("");
-
     try {
       const numericUserId = getNumericUserId();
       if (!numericUserId) {
@@ -67,24 +80,27 @@ export default function TeachersBoard() {
 
       if (editingMessage) {
         const payload = {
-          id: editingMessage.id, // required on PUT by your config
+          id: editingMessage.id,
           title: formData.title,
           content: formData.content,
           type: formData.type,
           tags: formData.tags,
-          teachersOnly: true, // 🔥 force teacher-only on this board
+          teachersOnly: true,
           authorId: editingMessage.authorId ?? numericUserId,
         };
 
         await updateMessage(editingMessage.id, payload);
 
         setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === editingMessage.id
-              ? { ...msg, ...payload, updatedAt: new Date().toISOString() }
-              : msg
+          sortMessages(
+            prev.map((msg) =>
+              msg.id === editingMessage.id
+                ? { ...msg, ...payload, updatedAt: new Date().toISOString() }
+                : msg
+            )
           )
         );
+
         setEditingMessage(null);
       } else {
         const payload = {
@@ -92,14 +108,14 @@ export default function TeachersBoard() {
           content: formData.content,
           type: formData.type,
           tags: formData.tags,
-          teachersOnly: true, // 🔥 always true on teachers board
+          teachersOnly: true,
           authorId: numericUserId,
           author: user?.email,
           createdAt: new Date().toISOString(),
         };
 
         const { data } = await createMessage(payload);
-        setMessages((prev) => [data, ...prev]);
+        setMessages((prev) => sortMessages([data, ...prev]));
       }
 
       setShowForm(false);
@@ -118,11 +134,16 @@ export default function TeachersBoard() {
     }
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    if (!window.confirm("Weet je zeker dat je dit bericht wilt verwijderen?"))
-      return;
+  const handleDeleteClick = (message) => {
+    setDeleteTarget(message);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const messageId = deleteTarget.id;
     setError("");
+
     try {
       await deleteMessage(messageId);
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
@@ -132,6 +153,8 @@ export default function TeachersBoard() {
         "Teacher board delete error:",
         e?.response?.data || e.message
       );
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -147,73 +170,90 @@ export default function TeachersBoard() {
 
   if (loading) return <Loader label="Docentenberichten laden..." />;
 
+  const numericUserId = getNumericUserId();
+  const role = user?.role;
+  const roles = user?.roles || [];
+  const isAdmin = role === "admin" || roles.includes("admin");
+
   return (
     <div className="teacher-board">
-      <div className="teacher-board__header">
-        <div>
-          <h1 className="teacher-board__title">Docentenboard</h1>
-          <p className="teacher-board__subtitle">
-            Alleen zichtbaar voor docenten – interne aankondigingen, planning en
-            notities.
-          </p>
+      <div className="teacher-board__inner">
+        <div className="teacher-board__header">
+          <div>
+            <h1 className="teacher-board__title">Docentenboard</h1>
+            <p className="teacher-board__subtitle">
+              Alleen zichtbaar voor docenten – interne aankondigingen, planning
+              en notities.
+            </p>
+          </div>
+          {!showForm && (
+            <Button onClick={() => setShowForm(true)} variant="primary">
+              Nieuw docentenbericht
+            </Button>
+          )}
         </div>
-        {!showForm && (
-          <Button onClick={() => setShowForm(true)} variant="primary">
-            Nieuw docentenbericht
-          </Button>
-        )}
-      </div>
 
-      {error && <ErrorNotice message={error} />}
+        {error && <ErrorNotice message={error} />}
 
-      {/* Message Form */}
-      {showForm && (
-        <div className="teacher-board__form-container">
-          <PostForm
-            initialData={
-              editingMessage
-                ? { ...editingMessage, teachersOnly: true }
-                : { type: "Planning", teachersOnly: true }
-            }
-            onSubmit={handleSubmitMessage}
-            onCancel={handleCancelForm}
-            isSubmitting={submitting}
-          />
-        </div>
-      )}
-
-      {/* Messages List */}
-      <div className="teacher-board__messages">
-        {messages.length === 0 ? (
-          <EmptyState
-            title="Nog geen docentenberichten"
-            message="Gebruik dit board om met collega’s af te stemmen."
-            actionLabel="Eerste docentenbericht plaatsen"
-            onClick={() => setShowForm(true)}
-          />
-        ) : (
-          <div className="teacher-board__grid">
-            {messages.map((message) => {
-              const numericUserId = getNumericUserId();
-              const isOwner =
-                numericUserId &&
-                (message.authorId === numericUserId ||
-                  message.userId === numericUserId); // fallback if older data
-
-              return (
-                <PostCard
-                  key={message.id}
-                  message={message}
-                  onEdit={() => handleEditMessage(message)}
-                  onDelete={() => handleDeleteMessage(message.id)}
-                  // Here I keep it strict: owner or admin
-                  canEdit={isOwner || user?.role === "admin"}
-                  canDelete={isOwner || user?.role === "admin"}
-                />
-              );
-            })}
+        {showForm && (
+          <div className="teacher-board__form-container">
+            <PostForm
+              initialData={
+                editingMessage
+                  ? { ...editingMessage, teachersOnly: true }
+                  : { type: "Planning", teachersOnly: true }
+              }
+              onSubmit={handleSubmitMessage}
+              onCancel={handleCancelForm}
+              isSubmitting={submitting}
+              context="teachers"
+            />
           </div>
         )}
+
+        <div className="teacher-board__messages">
+          {messages.length === 0 ? (
+            <EmptyState
+              title="Nog geen docentenberichten"
+              message="Gebruik dit board om met collega’s af te stemmen."
+              actionLabel="Eerste docentenbericht plaatsen"
+              onClick={() => setShowForm(true)}
+            />
+          ) : (
+            <div className="teacher-board__grid">
+              {messages.map((message) => {
+                const isOwner =
+                  numericUserId &&
+                  (message.authorId === numericUserId ||
+                    message.userId === numericUserId);
+
+                const canEdit = isOwner || isAdmin;
+                const canDelete = isOwner || isAdmin;
+
+                return (
+                  <PostCard
+                    key={message.id}
+                    message={message}
+                    onEdit={() => handleEditMessage(message)}
+                    onDelete={() => handleDeleteClick(message)}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <Modal
+          isOpen={Boolean(deleteTarget)}
+          title="Bericht verwijderen"
+          message="Weet je zeker dat je dit bericht wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+          confirmLabel="Ja, verwijderen"
+          cancelLabel="Annuleren"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       </div>
     </div>
   );

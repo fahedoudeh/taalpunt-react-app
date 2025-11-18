@@ -44,7 +44,7 @@ function App() {
           <Route
             path="/teachers"
             element={
-              <RoleRoute allow={["teacher"]}>
+              <RoleRoute allow={["teacher", "admin"]}>
                 <TeachersRoom />
               </RoleRoute>
             }
@@ -52,7 +52,7 @@ function App() {
           <Route
             path="/teachers-board"
             element={
-              <RoleRoute allowedRoles={["teacher", "admin"]}>
+              <RoleRoute allow={["teacher", "admin"]}>
                 <TeachersBoard />
               </RoleRoute>
             }

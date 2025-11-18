@@ -1,0 +1,39 @@
+.toast {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  color: #111827;
+
+  z-index: 70;
+  animation: fade-slide 0.25s ease-out;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* Variants */
+.toast--info {
+  background: #e0f2fe;
+}
+
+.toast--success {
+  background: #d1fae5;
+}
+
+.toast--error {
+  background: #fee2e2;
+}
+
+@keyframes fade-slide {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
