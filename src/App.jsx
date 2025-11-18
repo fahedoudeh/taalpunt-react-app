@@ -42,7 +42,7 @@ function App() {
           <Route path="/board" element={<Board />} />
           <Route path="/board/:id" element={<MessageDetail />} />
           <Route
-            path="/teachers"
+            path="/teachers-room"
             element={
               <RoleRoute allow={["teacher", "admin"]}>
                 <TeachersRoom />
