@@ -418,3 +418,32 @@
     padding: 0.45rem 0.4rem;
   }
 }
+.activity-form {
+  margin-bottom: 1rem;
+}
+
+.activity-form form input,
+.activity-form form textarea,
+.activity-form form select {
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 0.5rem;
+}
+
+.activity-form .form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.activity-form .form-row input {
+  flex: 1;
+}
+
+.icon-btn {
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+}
+
+.icon-btn svg {
+  display: block;
+}

@@ -1,0 +1,17 @@
+export {
+  Home,
+  BookOpen,
+  Calendar,
+  MessageSquare,
+  Users,
+  Plus,
+  Edit3,
+  Trash2,
+  LogOut,
+  User,
+  PenSquare,
+  Bell,
+  School,
+  FolderPlus,
+  Settings,
+} from "lucide-react";

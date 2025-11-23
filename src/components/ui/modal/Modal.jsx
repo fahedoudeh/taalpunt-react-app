@@ -1,4 +1,4 @@
-import Button from "../button/Button";
+// src/components/ui/modal/Modal.jsx
 import "./Modal.css";
 
 export default function Modal({
@@ -9,49 +9,54 @@ export default function Modal({
   cancelLabel = "Annuleren",
   onConfirm,
   onCancel,
+  children,
 }) {
   if (!isOpen) return null;
 
-  const handleBackdropClick = (event) => {
-    if (event.target === event.currentTarget && onCancel) {
-      onCancel();
-    }
-  };
+  const isConfirmMode = Boolean(message && onConfirm);
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <h2 id="modal-title" className="modal__title">
-          {title}
-        </h2>
-        {message && <p className="modal__message">{message}</p>}
-        <div className="modal__actions">
-          {onCancel && (
-            <Button
+    <div className="tp-modal-backdrop" role="dialog" aria-modal="true">
+      <div className="tp-modal">
+        {/* Header */}
+        <header className="tp-modal__header">
+          {title && <h2 className="tp-modal__title">{title}</h2>}
+          {!isConfirmMode && (
+            <button
               type="button"
-              variant="secondary"
+              className="tp-modal__close"
               onClick={onCancel}
-              size="sm"
+              aria-label="Sluiten"
+            >
+              ×
+            </button>
+          )}
+        </header>
+
+        {/* Body */}
+        <div className="tp-modal__body">
+          {isConfirmMode ? <p>{message}</p> : children}
+        </div>
+
+        {/* Footer only in confirm mode */}
+        {isConfirmMode && (
+          <footer className="tp-modal__footer">
+            <button
+              type="button"
+              className="tp-modal__btn tp-modal__btn--secondary"
+              onClick={onCancel}
             >
               {cancelLabel}
-            </Button>
-          )}
-          {onConfirm && (
-            <Button
+            </button>
+            <button
               type="button"
-              variant="danger"
+              className="tp-modal__btn tp-modal__btn--primary"
               onClick={onConfirm}
-              size="sm"
             >
               {confirmLabel}
-            </Button>
-          )}
-        </div>
+            </button>
+          </footer>
+        )}
       </div>
     </div>
   );

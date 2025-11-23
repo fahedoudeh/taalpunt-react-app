@@ -6,6 +6,7 @@ import RightSidebar from "../rightBar/RightSidebar";
 import "./Layout.css";
 
 export default function Layout() {
+  
   return (
     <>
       <Navbar />

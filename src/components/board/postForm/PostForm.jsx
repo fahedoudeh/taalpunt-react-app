@@ -71,7 +71,7 @@ export default function PostForm({
         <input
           id="title"
           type="text"
-          className={`post-form__input ${
+          className={`post-form__input post-form__title__input ${
             errors.title ? "post-form__input--error" : ""
           }`}
           {...register("title", {

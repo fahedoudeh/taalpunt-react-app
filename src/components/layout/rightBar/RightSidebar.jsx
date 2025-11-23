@@ -1,3 +1,4 @@
+// src/components/layout/rightBar/RightSidebar.jsx
 import "./RightSidebar.css";
 import WordOfTheDay from "../sidebar/WordOfTheDay";
 import ExpressionOfTheDay from "../sidebar/ExpressionOfTheDay";
@@ -10,15 +11,15 @@ const links = [
 
 function CookingTip() {
   const tips = [
-    "Voeg aan je soep een laurierblad toe voor extra diepte.",
-    "Kook aardappels met schil: meer smaak, minder werk.",
-    "Bak uien langzaam: zo worden ze zoet en zacht.",
+    "Voeg een laurierblad toe aan soep voor extra diepte.",
+    "Kook aardappels met schil: meer smaak en minder werk.",
+    "Bak uien langzaam voor een zoete, zachte smaak.",
   ];
-  const i = new Date().getDate() % tips.length;
+  const index = new Date().getDate() % tips.length;
   return (
     <div className="right__card">
-      <div className="right__title">Kooktip van de dag</div>
-      <p>{tips[i]}</p>
+      <h3 className="right__title">Kooktip van de dag</h3>
+      <p>{tips[index]}</p>
     </div>
   );
 }
@@ -26,25 +27,37 @@ function CookingTip() {
 export default function RightSidebar() {
   return (
     <aside className="right">
+      {/* Word + Expression */}
       <section className="right__section">
-        <WordOfTheDay />
-        <ExpressionOfTheDay />
+        <div className="right__card">
+          <WordOfTheDay />
+        </div>
+
+        <div className="right__card">
+          <ExpressionOfTheDay />
+        </div>
       </section>
 
-      <CookingTip />
+      {/* Cooking tip */}
+      <section className="right__section">
+        <CookingTip />
+      </section>
 
-      <div className="right__card">
-        <div className="right__title">Handige links</div>
-        <ul className="right__list">
-          {links.map((l) => (
-            <li key={l.href}>
-              <a className="right__link" href={l.href}>
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Handige links */}
+      <section className="right__section">
+        <div className="right__card">
+          <h3 className="right__title">Handige links</h3>
+          <ul className="right__list">
+            {links.map((l) => (
+              <li key={l.href}>
+                <a className="right__link" href={l.href}>
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
     </aside>
   );
 }

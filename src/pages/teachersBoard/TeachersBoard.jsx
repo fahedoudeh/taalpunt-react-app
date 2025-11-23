@@ -13,6 +13,7 @@ import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
 import Modal from "../../components/ui/modal/Modal";
+import { sortByNewest } from "../../helpers/utils";
 
 import "./TeachersBoard.css";
 
@@ -22,9 +23,10 @@ export default function TeachersBoard() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showForm, setShowForm] = useState(false);
+
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -33,24 +35,13 @@ export default function TeachersBoard() {
     return Number(user.id ?? user.userId);
   };
 
-  const sortMessages = (arr) => {
-    if (!Array.isArray(arr)) return [];
-    return [...arr].sort((a, b) => {
-      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      if (db !== da) return db - da;
-      const ida = typeof a.id === "number" ? a.id : 0;
-      const idb = typeof b.id === "number" ? b.id : 0;
-      return idb - ida;
-    });
-  };
-
   const fetchMessages = async () => {
     setError("");
     setLoading(true);
     try {
       const { data } = await getTeacherMessages();
-      setMessages(sortMessages(Array.isArray(data) ? data : []));
+      const list = Array.isArray(data) ? data : [];
+      setMessages(sortByNewest(list));
     } catch (e) {
       if (e.code === "ECONNABORTED") {
         setError("De server reageert traag. Probeer het zo nog eens.");
@@ -69,9 +60,25 @@ export default function TeachersBoard() {
     fetchMessages();
   }, []);
 
+  const openNewPostModal = () => {
+    setEditingMessage(null);
+    setIsPostModalOpen(true);
+  };
+
+  const handleEditMessage = (message) => {
+    setEditingMessage(message);
+    setIsPostModalOpen(true);
+  };
+
+  const handleClosePostModal = () => {
+    setIsPostModalOpen(false);
+    setEditingMessage(null);
+  };
+
   const handleSubmitMessage = async (formData) => {
-    setSubmitting(true);
+    setIsSubmitting(true);
     setError("");
+
     try {
       const numericUserId = getNumericUserId();
       if (!numericUserId) {
@@ -87,12 +94,13 @@ export default function TeachersBoard() {
           tags: formData.tags,
           teachersOnly: true,
           authorId: editingMessage.authorId ?? numericUserId,
+          author: editingMessage.author ?? user?.email,
         };
 
         await updateMessage(editingMessage.id, payload);
 
         setMessages((prev) =>
-          sortMessages(
+          sortByNewest(
             prev.map((msg) =>
               msg.id === editingMessage.id
                 ? { ...msg, ...payload, updatedAt: new Date().toISOString() }
@@ -100,8 +108,6 @@ export default function TeachersBoard() {
             )
           )
         );
-
-        setEditingMessage(null);
       } else {
         const payload = {
           title: formData.title,
@@ -115,10 +121,10 @@ export default function TeachersBoard() {
         };
 
         const { data } = await createMessage(payload);
-        setMessages((prev) => sortMessages([data, ...prev]));
+        setMessages((prev) => sortByNewest([data, ...prev]));
       }
 
-      setShowForm(false);
+      handleClosePostModal();
     } catch (e) {
       setError(
         editingMessage
@@ -130,7 +136,7 @@ export default function TeachersBoard() {
         e?.response?.data || e.message
       );
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -158,22 +164,7 @@ export default function TeachersBoard() {
     }
   };
 
-  const handleEditMessage = (message) => {
-    setEditingMessage(message);
-    setShowForm(true);
-  };
-
-  const handleCancelForm = () => {
-    setShowForm(false);
-    setEditingMessage(null);
-  };
-
   if (loading) return <Loader label="Docentenberichten laden..." />;
-
-  const numericUserId = getNumericUserId();
-  const role = user?.role;
-  const roles = user?.roles || [];
-  const isAdmin = role === "admin" || roles.includes("admin");
 
   return (
     <div className="teacher-board">
@@ -186,30 +177,12 @@ export default function TeachersBoard() {
               en notities.
             </p>
           </div>
-          {!showForm && (
-            <Button onClick={() => setShowForm(true)} variant="primary">
-              Nieuw docentenbericht
-            </Button>
-          )}
+          <Button onClick={openNewPostModal} variant="primary">
+            Nieuw docentenbericht
+          </Button>
         </div>
 
         {error && <ErrorNotice message={error} />}
-
-        {showForm && (
-          <div className="teacher-board__form-container">
-            <PostForm
-              initialData={
-                editingMessage
-                  ? { ...editingMessage, teachersOnly: true }
-                  : { type: "Planning", teachersOnly: true }
-              }
-              onSubmit={handleSubmitMessage}
-              onCancel={handleCancelForm}
-              isSubmitting={submitting}
-              context="teachers"
-            />
-          </div>
-        )}
 
         <div className="teacher-board__messages">
           {messages.length === 0 ? (
@@ -217,18 +190,16 @@ export default function TeachersBoard() {
               title="Nog geen docentenberichten"
               message="Gebruik dit board om met collega’s af te stemmen."
               actionLabel="Eerste docentenbericht plaatsen"
-              onClick={() => setShowForm(true)}
+              onClick={openNewPostModal}
             />
           ) : (
             <div className="teacher-board__grid">
               {messages.map((message) => {
+                const numericUserId = getNumericUserId();
                 const isOwner =
                   numericUserId &&
                   (message.authorId === numericUserId ||
                     message.userId === numericUserId);
-
-                const canEdit = isOwner || isAdmin;
-                const canDelete = isOwner || isAdmin;
 
                 return (
                   <PostCard
@@ -236,14 +207,36 @@ export default function TeachersBoard() {
                     message={message}
                     onEdit={() => handleEditMessage(message)}
                     onDelete={() => handleDeleteClick(message)}
-                    canEdit={canEdit}
-                    canDelete={canDelete}
+                    canEdit={isOwner || user?.role === "admin"}
+                    canDelete={isOwner || user?.role === "admin"}
                   />
                 );
               })}
             </div>
           )}
         </div>
+
+        <Modal
+          isOpen={isPostModalOpen}
+          title={
+            editingMessage
+              ? "Docentenbericht bewerken"
+              : "Nieuw docentenbericht"
+          }
+          onCancel={handleClosePostModal}
+          onConfirm={null}
+        >
+          <PostForm
+            initialData={
+              editingMessage
+                ? { ...editingMessage, teachersOnly: true }
+                : { type: "Planning", teachersOnly: true }
+            }
+            onSubmit={handleSubmitMessage}
+            onCancel={handleClosePostModal}
+            isSubmitting={isSubmitting}
+          />
+        </Modal>
 
         <Modal
           isOpen={Boolean(deleteTarget)}
