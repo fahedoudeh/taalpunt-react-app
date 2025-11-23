@@ -23,3 +23,14 @@
   align-items: center;
   gap: 0.25rem;
 }
+/* Add at bottom of src/components/board/postCard/PostCard.css */
+
+.post-card--clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

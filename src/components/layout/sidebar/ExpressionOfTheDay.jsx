@@ -1,4 +1,4 @@
-// src/components/layout/sidebar/ExpressionOfTheDay.jsx
+
 import { useState, useMemo } from "react";
 import { EXPRESSIONS } from "../../../data/expressions";
 import { todayPick } from "../../../helpers/dailyPick";
@@ -26,13 +26,13 @@ export default function ExpressionOfTheDay() {
           className="side__linkbtn"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          style={{ marginTop: ".5rem" }}
+         
         >
           {open ? "Minder voorbeelden" : "Voorbeelden"}
         </button>
 
         {open && (
-          <ul className="side__list" style={{ marginTop: ".4rem" }}>
+          <ul className="side__list">
             {pick.examples.slice(0, 3).map((ex, i) => (
               <li key={i} className="side__muted">
                 • {ex}
