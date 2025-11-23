@@ -1,8 +1,8 @@
+
 import { useForm } from "react-hook-form";
-import { getHomework, createHomework } from "../../../services/homeworkService";
+import { createHomework } from "../../../services/homeworkService";
 import { useState } from "react";
 
-// Small helper (timeout-friendly copy like elsewhere)
 const friendlyError = (e, defaultMsg) =>
   e?.code === "ECONNABORTED"
     ? "De server reageert traag. Probeer het zo nog eens."
@@ -34,14 +34,8 @@ export default function HomeworkForm({
   const onSubmit = async (values) => {
     setServerError("");
     try {
-      // NOVI Dynamic API requires an explicit numeric `id`
-      const listRes = await getHomework();
-      const list = Array.isArray(listRes?.data) ? listRes.data : [];
-      const nextId =
-        (list.reduce((m, it) => Math.max(m, Number(it?.id || 0)), 0) || 0) + 1;
-
+      
       const payload = {
-        id: nextId,
         title: values.title.trim(),
         description: values.description.trim(),
         dueDate: values.dueDate, // "YYYY-MM-DD"

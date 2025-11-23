@@ -1,3 +1,149 @@
 .hw-form { margin: 1rem 0; display: grid; gap: .75rem; }
 .hw-form__row { display: grid; gap: .25rem; }
 .hw-form__error { color: #b00020; }
+/* Add at bottom of HomeworkForm.css */
+
+.homework-loading {
+  color: #6b7280;
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+.homework-submitted {
+  background-color: #d1fae5;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.homework-submitted__title {
+  color: #065f46;
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.homework-submitted__link {
+  color: #047857;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.homework-submitted__link a {
+  color: #059669;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.homework-submitted__link a:hover {
+  color: #047857;
+}
+
+.homework-form {
+  background-color: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.homework-form__title {
+  color: #92400e;
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+}
+
+.homework-form__field {
+  margin-bottom: 1rem;
+}
+
+.homework-form__label {
+  display: block;
+  font-weight: 600;
+  color: #78350f;
+  margin-bottom: 0.5rem;
+}
+
+.homework-form__input,
+.homework-form__textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d97706;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.homework-form__input:focus,
+.homework-form__textarea:focus {
+  outline: none;
+  border-color: #b45309;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.homework-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.homework-form__error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.homework-form__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+/* Add at bottom of HomeworkForm.css */
+
+.homework-form--teacher {
+  background-color: #dbeafe;
+  border: 2px solid #3b82f6;
+}
+
+.homework-teacher-view {
+  margin-bottom: 1rem;
+}
+
+.homework-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.homework-form__hint {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.homework-submitted__comment {
+  background-color: #f9fafb;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.homework-submitted__comment strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #065f46;
+}
+
+.homework-submitted__comment p {
+  margin: 0;
+  color: #374151;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.homework-submitted__date {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}

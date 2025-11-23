@@ -1,142 +1,177 @@
 import { useForm } from "react-hook-form";
-import { createHomework, getHomeworkByLesson } from "../../../services/homeworkService";
-import { useState } from "react";
+import {
+  createHomework,
+  updateHomework,
+} from "../../../services/homeworkService";
+import Button from "../../ui/button/Button";
+import "./HomeworkForm.css";
 
-const friendlyError = (e, d) =>
-  e?.code === "ECONNABORTED"
-    ? "De server reageert traag. Probeer het zo nog eens."
-    : d;
-
-/**
- * Props:
- * - lessonId: number (required)
- * - students: [{ id:number, label:string }] (required, list to assign to)
- * - onCreated?: (row) => void
- */
 export default function TeacherHomeworkForm({
   lessonId,
-  students = [],
-  onCreated,
+  existingHomework = null,
+  onSuccess,
+  onCancel,
 }) {
-  const [serverError, setServerError] = useState("");
+  const isEditing = Boolean(existingHomework?.id);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm({
     defaultValues: {
-      title: "",
-      description: "",
-      dueDate: "",
-      studentId: students[0]?.id ? String(students[0].id) : "",
+      title: existingHomework?.title || "",
+      description: existingHomework?.description || "",
+      dueDate: existingHomework?.dueDate || "",
     },
   });
 
-  const onSubmit = async (v) => {
-    setServerError("");
-    try {
-      // Compute next id locally (Dynamic API doesn't auto-increment)
-      const response = await getHomeworkByLesson(lessonId); 
-      const existing = Array.isArray(response?.data) ? response.data : []; 
-      const nextId =
-        (existing.reduce((m, it) => Math.max(m, Number(it?.id || 0)), 0) || 0) +
-        1;
+ const onSubmit = async (data) => {
+   try {
+     const payload = {
+       lessonId: lessonId,
+       title: data.title.trim(),
+       description: data.description.trim(),
+       dueDate: data.dueDate, // Keep as YYYY-MM-DD string, API will handle it
+     };
 
-      const payload = {
-        id: nextId,
-        title: v.title.trim(),
-        description: v.description.trim(),
-        dueDate: v.dueDate, // YYYY-MM-DD
-        submissionUrl: "",
-        submitted: false,
-        lessonId: Number(lessonId),
-        studentId: Number(v.studentId),
-        // createdAt defaults from config
-      };
+     if (isEditing) {
+       // Update existing homework - MUST include id and createdAt
+       payload.id = existingHomework.id; // ADD THIS!
+       payload.createdAt =
+         existingHomework.createdAt || new Date().toISOString();
 
-      const res = await createHomework(payload);
-      onCreated?.(res.data);
-      reset();
-    } catch (e) {
-      console.error("Create homework error:", e?.response?.data || e.message);
-      setServerError(friendlyError(e, "Kon huiswerk niet opslaan."));
-    }
-  };
+       console.log("UPDATE payload:", payload);
+       await updateHomework(existingHomework.id, payload);
+     } else {
+       // Create new homework
+       payload.createdAt = new Date().toISOString(); // ISO string, not timestamp!
+
+       console.log("CREATE payload:", payload);
+       await createHomework(payload);
+     }
+
+     if (onSuccess) {
+       onSuccess();
+     }
+   } catch (err) {
+     console.error("Error saving homework:", err);
+     console.log("Error response:", err.response?.data);
+
+     alert(
+       err.response?.data?.message ||
+         `Kon huiswerk niet ${isEditing ? "bijwerken" : "aanmaken"}`
+     );
+   }
+ };
+
+  // Get today's date in YYYY-MM-DD format for min attribute
+  const today = new Date().toISOString().split("T")[0];
 
   return (
-    <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-      {serverError && (
-        <p className="form-error" role="alert">
-          {serverError}
-        </p>
-      )}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="homework-form homework-form--teacher"
+    >
+      <h4 className="homework-form__title">
+        {isEditing ? "Huiswerk Bewerken" : "Nieuw Huiswerk"}
+      </h4>
 
-      <div className="form-row">
-        <label htmlFor="thf-title">Titel</label>
+      <div className="homework-form__field">
+        <label htmlFor="title" className="homework-form__label">
+          Titel *
+        </label>
         <input
-          id="thf-title"
+          id="title"
+          type="text"
+          className="homework-form__input"
+          placeholder="Bijv: Werkblad 1"
           {...register("title", {
-            required: "Verplicht",
-            minLength: { value: 3, message: "Min. 3 tekens" },
-            maxLength: { value: 200, message: "Max. 200 tekens" },
+            required: "Titel is verplicht",
+            minLength: {
+              value: 3,
+              message: "Titel moet minimaal 3 tekens bevatten",
+            },
+            maxLength: {
+              value: 100,
+              message: "Titel mag maximaal 100 tekens bevatten",
+            },
           })}
         />
-        {errors.title && <p className="form-error">{errors.title.message}</p>}
+        {errors.title && (
+          <span className="homework-form__error">{errors.title.message}</span>
+        )}
       </div>
 
-      <div className="form-row">
-        <label htmlFor="thf-desc">Beschrijving</label>
+      <div className="homework-form__field">
+        <label htmlFor="description" className="homework-form__label">
+          Beschrijving *
+        </label>
         <textarea
-          id="thf-desc"
-          rows={4}
+          id="description"
+          className="homework-form__textarea"
+          rows="5"
+          placeholder="Maak oefeningen 1 t/m 10..."
           {...register("description", {
-            required: "Verplicht",
-            minLength: { value: 10, message: "Min. 10 tekens" },
-            maxLength: { value: 2000, message: "Max. 2000 tekens" },
+            required: "Beschrijving is verplicht",
+            minLength: {
+              value: 10,
+              message: "Beschrijving moet minimaal 10 tekens bevatten",
+            },
+            maxLength: {
+              value: 1000,
+              message: "Beschrijving mag maximaal 1000 tekens bevatten",
+            },
           })}
         />
         {errors.description && (
-          <p className="form-error">{errors.description.message}</p>
+          <span className="homework-form__error">
+            {errors.description.message}
+          </span>
         )}
       </div>
 
-      <div className="form-row">
-        <label htmlFor="thf-due">Deadline</label>
+      <div className="homework-form__field">
+        <label htmlFor="dueDate" className="homework-form__label">
+          Inleverdatum *
+        </label>
         <input
-          id="thf-due"
+          id="dueDate"
           type="date"
+          className="homework-form__input"
+          min={isEditing ? undefined : today}
           {...register("dueDate", {
-            required: "Verplicht",
-            pattern: { value: /^\d{4}-\d{2}-\d{2}$/, message: "JJJJ-MM-DD" },
+            required: "Inleverdatum is verplicht",
+            validate: (value) => {
+              if (isEditing) return true; // Allow past dates when editing
+              const selected = new Date(value);
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
+              return (
+                selected >= now || "Inleverdatum moet in de toekomst liggen"
+              );
+            },
           })}
         />
         {errors.dueDate && (
-          <p className="form-error">{errors.dueDate.message}</p>
+          <span className="homework-form__error">{errors.dueDate.message}</span>
         )}
       </div>
 
-      <div className="form-row">
-        <label htmlFor="thf-student">Student</label>
-        <select
-          id="thf-student"
-          {...register("studentId", { required: "Kies een student" })}
-        >
-          {students.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-        {errors.studentId && (
-          <p className="form-error">{errors.studentId.message}</p>
-        )}
+      <div className="homework-form__actions">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Annuleren
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting
+            ? isEditing
+              ? "Bezig met bijwerken..."
+              : "Bezig..."
+            : isEditing
+            ? "Bijwerken"
+            : "Aanmaken"}
+        </Button>
       </div>
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Opslaan…" : "Huiswerk toevoegen"}
-      </button>
     </form>
   );
 }

@@ -14,7 +14,6 @@ import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
 import Modal from "../../components/ui/modal/Modal";
 import { sortByNewest } from "../../helpers/utils";
-
 import "./Board.css";
 
 export default function Board() {
@@ -161,51 +160,52 @@ export default function Board() {
 
   return (
     <div className="board">
-      <div className="board__header">
-        <div>
-          <h1 className="board__title">Community board</h1>
-          <p className="board__subtitle">
-            Deel tips, stel vragen en praat mee met andere cursisten.
-          </p>
+      <div className="board__inner">
+        <div className="board__header">
+          <div>
+            <h1 className="board__title">Community Board</h1>
+            <p className="board__subtitle">
+              Deel tips, stel vragen en praat mee met andere cursisten.
+            </p>
+          </div>
+          <Button variant="primary" onClick={openNewPostModal}>
+            Nieuw bericht
+          </Button>
         </div>
 
-        <Button variant="primary" onClick={openNewPostModal}>
-          Nieuw bericht
-        </Button>
-      </div>
+        {error && <ErrorNotice message={error} />}
 
-      {error && <ErrorNotice message={error} />}
+        <div className="board__content">
+          {messages.length === 0 ? (
+            <EmptyState
+              title="Nog geen berichten"
+              message="Wees de eerste die iets deelt op het board."
+              actionLabel="Eerste bericht plaatsen"
+              onClick={openNewPostModal}
+            />
+          ) : (
+            <div className="board__list">
+              {messages.map((message) => {
+                const numericUserId = getNumericUserId();
+                const isOwner =
+                  numericUserId &&
+                  (message.authorId === numericUserId ||
+                    message.userId === numericUserId);
 
-      <div className="board__content">
-        {messages.length === 0 ? (
-          <EmptyState
-            title="Nog geen berichten"
-            message="Wees de eerste die iets deelt op het board."
-            actionLabel="Eerste bericht plaatsen"
-            onClick={openNewPostModal}
-          />
-        ) : (
-          <div className="board__list">
-            {messages.map((message) => {
-              const numericUserId = getNumericUserId();
-              const isOwner =
-                numericUserId &&
-                (message.authorId === numericUserId ||
-                  message.userId === numericUserId);
-
-              return (
-                <PostCard
-                  key={message.id}
-                  message={message}
-                  onEdit={() => handleEditMessage(message)}
-                  onDelete={() => handleDeleteClick(message)}
-                  canEdit={isOwner || user?.role === "admin"}
-                  canDelete={isOwner || user?.role === "admin"}
-                />
-              );
-            })}
-          </div>
-        )}
+                return (
+                  <PostCard
+                    key={message.id}
+                    message={message}
+                    onEdit={() => handleEditMessage(message)}
+                    onDelete={() => handleDeleteClick(message)}
+                    canEdit={isOwner || user?.role === "admin"}
+                    canDelete={isOwner || user?.role === "admin"}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       <Modal

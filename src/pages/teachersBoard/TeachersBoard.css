@@ -1,7 +1,9 @@
+/* src/pages/teachersBoard/TeachersBoard.css */
+
 .teacher-board {
   display: flex;
   justify-content: center;
-  padding: 0 1.5rem 1.5rem;
+  padding: 1.5rem;
 }
 
 .teacher-board__inner {
@@ -9,29 +11,25 @@
   max-width: 900px;
 }
 
-/* Header */
 .teacher-board__header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .teacher-board__title {
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 0.5rem 0;
+  color: #111827;
 }
 
 .teacher-board__subtitle {
-  margin: 0.25rem 0 0;
-  font-size: 0.95rem;
-  color: var(--color-text-muted, #6b7280);
-}
-
-.teacher-board__form-container {
-  margin-bottom: 1rem;
+  margin: 0;
+  font-size: 1rem;
+  color: #6b7280;
 }
 
 .teacher-board__messages {
@@ -43,21 +41,26 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .teacher-board__grid .post-card {
   width: 100%;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .teacher-board {
-    padding: 0.5rem;
+    padding: 1rem;
   }
 
   .teacher-board__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .teacher-board__title {
+    font-size: 1.5rem;
   }
 
   .teacher-board__inner {
