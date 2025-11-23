@@ -15,6 +15,8 @@ export default function ActivityForm({ onCreated }) {
   const { user } = useAuth();
   const userId = user?.userId;
 
+  
+
   const [serverError, setServerError] = useState("");
   const {
     register,

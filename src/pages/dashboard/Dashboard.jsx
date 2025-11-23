@@ -13,11 +13,15 @@ import { getMessages } from "../../services/messageService";
 import { getKapelleWeather } from "../../services/weatherService";
 
 import { formatDate } from "../../helpers/formatDate";
-import { asArray, take, orText } from "../../helpers/utils";
+import { asArray, take, orText, sortByNewest } from "../../helpers/utils";
 
 import { useAuth } from "../../contexts/AuthContext";
 
 import "./Dashboard.css";
+
+
+
+
 
 // Simple mapping for Open-Meteo weather codes
 function describeWeather(code) {
@@ -194,7 +198,9 @@ export default function Dashboard() {
       setLessonsLoading(true);
       try {
         const response = await getLessons();
-        setLessons(take(asArray(response?.data), 5));
+        const items = asArray(response?.data);
+        const sorted = sortByNewest(items, "date");
+        setLessons(take(sorted, 5));
       } catch (error) {
         if (error.code === "ECONNABORTED") {
           setLessonsErr("De server reageert traag. Probeer het zo nog eens.");
@@ -213,7 +219,9 @@ export default function Dashboard() {
       setActivitiesLoading(true);
       try {
         const response = await getActivities();
-        setActivities(take(asArray(response?.data), 5));
+        const items = asArray(response?.data);
+        const sorted = sortByNewest(items, "date");
+        setActivities(take(sorted, 5));
       } catch (error) {
         if (error.code === "ECONNABORTED") {
           setActivitiesErr(
@@ -237,8 +245,9 @@ export default function Dashboard() {
       setPostsLoading(true);
       try {
         const response = await getMessages();
-        // take a few more, we split later
-        setPosts(take(asArray(response?.data), 10));
+        const items = asArray(response?.data);
+        const sorted = sortByNewest(items, "createdAt", "date");
+        setPosts(take(sorted, 10));
       } catch (error) {
         if (error.code === "ECONNABORTED") {
           setPostsErr("De server reageert traag. Probeer het zo nog eens.");

@@ -1,11 +1,11 @@
-import Button from "../../ui/button/Button";
 import { formatDate } from "../../../helpers/formatDate";
+import IconButton from "../../ui/icons/IconButton";
+import { Pencil, Trash2 } from "lucide-react";
 import "./PostCard.css";
 
 function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
   if (!message) return null;
 
-  // Try to be flexible with possible field names
   const title = message.title || message.subject || "Bericht";
   const content = message.body || message.content || message.text || "";
   const author =
@@ -13,33 +13,21 @@ function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
     message.username ||
     message.userEmail ||
     "Onbekende schrijver";
+
   const createdAt = message.createdAt || message.created_at;
   const updatedAt = message.updatedAt || message.updated_at;
   const hasBeenUpdated = Boolean(updatedAt && updatedAt !== createdAt);
 
-  const type = message.type || null;
-  const teachersOnly = Boolean(message.teachersOnly);
-
   return (
     <article className="post-card">
       <header className="post-card__header">
-        <div>
-          <h2 className="post-card__title">{title}</h2>
-          <div className="post-card__meta">
-            <span className="post-card__author">{author}</span>
-
-            {createdAt && (
-              <span className="post-card__date">· {formatDate(createdAt)}</span>
-            )}
-
-            {type && <span className="post-card__type"> · {type}</span>}
-
-            {teachersOnly && <span className="post-card__badge">Docenten</span>}
-
-            {hasBeenUpdated && (
-              <span className="post-card__badge">Bewerkt</span>
-            )}
-          </div>
+        <h2 className="post-card__title">{title}</h2>
+        <div className="post-card__meta">
+          <span className="post-card__author">{author}</span>
+          {createdAt && (
+            <span className="post-card__date">· {formatDate(createdAt)}</span>
+          )}
+          {hasBeenUpdated && <span className="post-card__badge">Bewerkt</span>}
         </div>
       </header>
 
@@ -49,16 +37,24 @@ function PostCard({ message, onEdit, onDelete, canEdit, canDelete }) {
 
       {(canEdit || canDelete) && (
         <footer className="post-card__footer">
-          {canEdit && (
-            <Button variant="secondary" size="sm" onClick={onEdit}>
-              Bewerken
-            </Button>
-          )}
-          {canDelete && (
-            <Button variant="danger" size="sm" onClick={onDelete}>
-              Verwijderen
-            </Button>
-          )}
+          <div className="post-card__actions">
+            {canEdit && (
+              <IconButton
+                icon={Pencil}
+                label="Bericht bewerken"
+                variant="default"
+                onClick={onEdit}
+              />
+            )}
+            {canDelete && (
+              <IconButton
+                icon={Trash2}
+                label="Bericht verwijderen"
+                variant="danger"
+                onClick={onDelete}
+              />
+            )}
+          </div>
         </footer>
       )}
     </article>

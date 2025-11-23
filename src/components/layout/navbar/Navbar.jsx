@@ -238,7 +238,7 @@ export default function Navbar() {
             }
           >
             <BoardIcon className="navbar__icon" />
-            <span className="navbar__icon-label">Community board</span>
+            <span className="navbar__icon-label">Board</span>
           </NavLink>
 
           {isTeacherOrAdmin && (
@@ -264,7 +264,7 @@ export default function Navbar() {
                 }
               >
                 <RoomIcon className="navbar__icon" />
-                <span className="navbar__icon-label">Docentenkamer</span>
+                <span className="navbar__icon-label">Docenten</span>
               </NavLink>
             </>
           )}

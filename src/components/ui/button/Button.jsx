@@ -2,7 +2,7 @@ import "./Button.css";
 
 function Button({
   children,
-  variant = "primary", // "primary" | "secondary" | "ghost" | "danger"
+  variant = "primary", // "primary" | "secondary" | "ghost" | "danger" | "accent"
   size = "md", // "sm" | "md" | "lg"
   fullWidth = false,
   className = "",

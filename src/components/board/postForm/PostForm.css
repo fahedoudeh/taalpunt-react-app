@@ -7,6 +7,12 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  /* Important: make it behave as a proper card */
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 600px;     /* nice readable width in modal & on the board */
+  margin: 0 auto;       /* center inside parent (modal body or page) */
 }
 
 /* Title row – similar to "Create post" */
@@ -19,12 +25,13 @@
   padding-bottom: 8px;
 }
 
-/* Fields – FB is quite compact */
+/* Fields – compact */
 .post-form__field {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-top: 2px;
+  width: 100%;
 }
 
 .post-form__label {
@@ -39,6 +46,8 @@
 .post-form__select,
 .post-form__textarea {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   font: inherit;
   font-size: 14px;
   padding: 7px 9px;
@@ -57,8 +66,54 @@
   min-height: 120px;
 }
 
-/* Focus – blue but your marineblauw */
+/* Focus */
 .post-form__input:focus,
 .post-form__select:focus,
 .post-form__textarea:focus {
   outline: none;
+  border-color: #001489;
+  box-shadow: 0 0 0 1px rgba(0, 20, 137, 0.15);
+  background-color: #ffffff;
+}
+
+/* Errors */
+.post-form__error {
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.post-form__input--error,
+.post-form__select--error,
+.post-form__textarea--error {
+  border-color: #b91c1c;
+  background-color: #fef2f2;
+}
+
+/* Checkbox row */
+.post-form__field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-form__checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.post-form__checkbox {
+  width: 14px;
+  height: 14px;
+}
+
+/* Actions */
+.post-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+.post-form__select { width: 35%;}
