@@ -131,7 +131,15 @@
   color: #001489;
   font-weight: 600;
 }
+/* Word/Expression of the Day button spacing */
+.side__linkbtn {
+  margin-top: 0.5rem;
+}
 
+/* Word/Expression examples list spacing */
+.side__list {
+  margin-top: 0.4rem;
+}
 /* Responsive tweak */
 
 @media (max-width: 900px) {

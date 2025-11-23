@@ -43,7 +43,7 @@ export default function MessageDetail() {
       <section>
         <p>{message.body ?? message.content ?? "—"}</p>
       </section>
-      <footer style={{ marginTop: "1rem" }}>
+      <footer className="message-detail-footer">
         <Link to="/board">← Terug naar board</Link>
       </footer>
     </article>

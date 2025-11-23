@@ -49,17 +49,30 @@ export default function LessonDetail() {
 
   return (
     <section>
-      <p><Link to="/lessons">← Terug naar lessen</Link></p>
+      <p>
+        <Link to="/lessons">← Terug naar lessen</Link>
+      </p>
       <h2>{lesson.title}</h2>
-      <p><strong>Datum:</strong> {lesson.date} • <strong>Tijd:</strong> {lesson.startTime}–{lesson.endTime}</p>
-      <p><strong>Locatie:</strong> {lesson.location}</p>
-      <p><strong>Niveau:</strong> {lesson.level}</p>
+      <p>
+        <strong>Datum:</strong> {lesson.date} • <strong>Tijd:</strong>{" "}
+        {lesson.startTime}–{lesson.endTime}
+      </p>
+      <p>
+        <strong>Locatie:</strong> {lesson.location}
+      </p>
+      <p>
+        <strong>Niveau:</strong> {lesson.level}
+      </p>
       {lesson.materialsUrl && (
-        <p><a href={lesson.materialsUrl} target="_blank" rel="noreferrer">Lesmateriaal</a></p>
+        <p>
+          <a href={lesson.materialsUrl} target="_blank" rel="noreferrer">
+            Lesmateriaal
+          </a>
+        </p>
       )}
-      <p style={{ whiteSpace: "pre-wrap" }}>{lesson.description}</p>
+      <p className="lesson-description">{lesson.description}</p>
 
-      <hr style={{ margin: "1rem 0" }} />
+      <hr className="lesson-section-divider" />
 
       {isTeacher ? (
         <>
@@ -67,7 +80,9 @@ export default function LessonDetail() {
           <TeacherHomeworkForm
             lessonId={Number(id)}
             students={DEMO_STUDENTS}
-            onCreated={() => {/* you can add a toast or small notice here */}}
+            onCreated={() => {
+              /* you can add a toast or small notice here */
+            }}
           />
         </>
       ) : (

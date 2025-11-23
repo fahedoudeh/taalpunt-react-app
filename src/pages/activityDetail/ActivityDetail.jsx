@@ -51,7 +51,7 @@ export default function ActivityDetail() {
     return (
       <div className="activity-detail-page">
         <ErrorNotice message={err} />
-        <p style={{ marginTop: "0.75rem" }}>
+        <p className="activity-meta-text">
           <Link to="/activities">Terug naar activiteiten</Link>
         </p>
       </div>

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -10,6 +11,7 @@ import {
   take,
 } from "../../../helpers/utils";
 import { formatDate } from "../../../helpers/formatDate";
+import "./UpcomingSidebar.css";
 
 export default function UpcomingSidebar() {
   const [upcomingItems, setUpcomingItems] = useState([]);
@@ -112,56 +114,37 @@ export default function UpcomingSidebar() {
       {/* Binnenkort: komende lessen + activiteiten */}
       <section className="side__section">
         <h3 className="side__title">Binnenkort</h3>
-        {error && (
-          <p style={{ fontSize: "0.8rem", color: "#b91c1c", margin: 0 }}>
-            {error}
-          </p>
-        )}
+
+        {error && <p className="upcoming-error">{error}</p>}
 
         {!error && upcomingItems.length === 0 && (
-          <p style={{ fontSize: "0.8rem", color: "#6b7280", margin: 0 }}>
-            Geen komende lessen of activiteiten.
-          </p>
+          <p className="upcoming-empty">Geen komende lessen of activiteiten.</p>
         )}
 
         {!error && upcomingItems.length > 0 && (
-          <ul style={{ margin: 0, paddingLeft: "1.1rem" }}>
+          <ul className="upcoming-list">
             {upcomingItems.map((item) => (
-              <li
-                key={`${item.type}-${item.id}`}
-                style={{
-                  fontSize: "0.82rem",
-                  marginBottom: "0.25rem",
-                  color: "#111827",
-                }}
-              >
+              <li key={`${item.type}-${item.id}`} className="upcoming-item">
                 <Link
                   to={
                     item.type === "lesson"
                       ? `/lessons/${item.id}`
                       : `/activities/${item.id}`
                   }
-                  style={{ textDecoration: "none", color: "inherit" }}
+                  className="upcoming-link"
                 >
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      marginRight: "0.25rem",
-                    }}
-                  >
+                  <span className="upcoming-prefix">
                     {item.type === "lesson" ? "Les:" : "Activiteit:"}
                   </span>
                   {item.title}
                   {item.date && (
-                    <span style={{ display: "block", color: "#6b7280" }}>
+                    <span className="upcoming-date">
                       {formatDate(item.date, false)}
                       {item.startTime ? ` • ${item.startTime}` : ""}
                     </span>
                   )}
                   {item.location && (
-                    <span style={{ display: "block", color: "#9ca3af" }}>
-                      {item.location}
-                    </span>
+                    <span className="upcoming-location">{item.location}</span>
                   )}
                 </Link>
               </li>
@@ -175,31 +158,19 @@ export default function UpcomingSidebar() {
         <h3 className="side__title">Laatste berichten</h3>
 
         {!error && latestPosts.length === 0 && (
-          <p style={{ fontSize: "0.8rem", color: "#6b7280", margin: 0 }}>
-            Nog geen berichten op het board.
-          </p>
+          <p className="upcoming-empty">Nog geen berichten op het board.</p>
         )}
 
         {!error && latestPosts.length > 0 && (
-          <ul style={{ margin: 0, paddingLeft: "1.1rem" }}>
+          <ul className="upcoming-list">
             {latestPosts.map((post) => (
-              <li
-                key={post.id}
-                style={{
-                  fontSize: "0.82rem",
-                  marginBottom: "0.25rem",
-                  color: "#111827",
-                }}
-              >
-                <Link
-                  to="/board"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <span style={{ fontWeight: 600 }}>
+              <li key={post.id} className="upcoming-item">
+                <Link to={`/board/${post.id}`} className="upcoming-link">
+                  <span className="upcoming-post-title">
                     {post.title || post.subject || "Bericht"}
                   </span>
                   {post.createdAt && (
-                    <span style={{ display: "block", color: "#6b7280" }}>
+                    <span className="upcoming-post-date">
                       {formatDate(post.createdAt, true)}
                     </span>
                   )}
