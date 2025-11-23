@@ -1,227 +1,178 @@
-// src/components/lesson/homeworkForm/StudentHomeworkSubmit.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../../contexts/AuthContext";
 import {
-  getHomeworkByLesson,
-  getSubmissionsByHomeworkAndStudent,
   getSubmissions,
   createSubmission,
 } from "../../../services/homeworkService";
-import Loader from "../../ui/loader/Loader";
+import { useAuth } from "../../../contexts/AuthContext";
+import Button from "../../ui/button/Button";
 import "./HomeworkForm.css";
 
-const friendlyError = (e, d) =>
-  e?.code === "ECONNABORTED"
-    ? "De server reageert traag. Probeer het zo nog eens."
-    : d;
-
-/**
- * Props:
- * - lessonId (number) -> the lesson being viewed
- */
-export default function StudentHomeworkSubmit({ lessonId }) {
+export default function StudentHomeworkSubmit({ homework }) {
   const { user } = useAuth();
-  const studentId = useMemo(() => Number(user?.userId), [user]);
-
+  const [submitted, setSubmitted] = useState(false);
+  const [submissionData, setSubmissionData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [serverErr, setServerErr] = useState("");
-  const [homework, setHomework] = useState(null);
-  const [existingSubmission, setExistingSubmission] = useState(null);
-  const [savedMsg, setSavedMsg] = useState("");
+  const [error, setError] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
-  } = useForm({
-    defaultValues: { submissionUrl: "" },
-  });
+  } = useForm();
 
-  // Load homework for this lesson, then check if this student already submitted
+  // Check if student already submitted
   useEffect(() => {
-    let ignore = false;
+    async function checkSubmission() {
+      if (!homework?.id || !user?.id) return;
 
-    async function load() {
-      setLoading(true);
-      setServerErr("");
-      setSavedMsg("");
       try {
-        // 1) homework for the lesson (usually 0 or 1 rows)
-        const hwRes = await getHomeworkByLesson(lessonId);
-        const list = Array.isArray(hwRes?.data) ? hwRes.data : [];
-        const first = list[0] || null;
-        if (ignore) return;
+        setLoading(true);
+        const response = await getSubmissions();
 
-        setHomework(first);
-
-        // 2) if there is homework, check if *this student* already submitted
-        if (first?.id != null && studentId) {
-          const subRes = await getSubmissionsByHomeworkAndStudent(
-            first.id,
-            studentId
-          );
-          const subs = Array.isArray(subRes?.data) ? subRes.data : [];
-          if (ignore) return;
-
-          setExistingSubmission(subs[0] || null);
-        } else {
-          setExistingSubmission(null);
-        }
-      } catch (e) {
-        console.error(
-          "StudentHomeworkSubmit load error:",
-          e?.response?.data || e.message
+        const submissions = response?.data || [];
+        const existingSubmission = submissions.find(
+          (s) =>
+            Number(s.studentId) === Number(user.id) &&
+            Number(s.homeworkId) === Number(homework.id)
         );
-        if (!ignore) setServerErr(friendlyError(e, "Kon huiswerk niet laden."));
+
+        if (existingSubmission) {
+          setSubmitted(true);
+          setSubmissionData(existingSubmission);
+        }
+      } catch (err) {
+        console.error("Error checking submission:", err);
       } finally {
-        if (!ignore) setLoading(false);
+        setLoading(false);
       }
     }
 
-    load();
-    return () => {
-      ignore = true;
-    };
-  }, [lessonId, studentId]);
+    checkSubmission();
+  }, [homework?.id, user?.id]);
 
-  async function onSubmit(values) {
-    if (!homework?.id || !studentId) return;
+  const onSubmit = async (data) => {
+    setError("");
 
-    setServerErr("");
-    setSavedMsg("");
     try {
-      // Compute next id (same pattern used elsewhere)
-      const allSubRes = await getSubmissions(); // fetch all to compute next id safely
-      const all = Array.isArray(allSubRes?.data) ? allSubRes.data : [];
-      const nextId =
-        (all.reduce((m, it) => Math.max(m, Number(it?.id || 0)), 0) || 0) + 1;
-
       const payload = {
-        id: nextId,
         homeworkId: Number(homework.id),
-        studentId: Number(studentId),
-        submissionUrl: values.submissionUrl.trim(),
+        studentId: Number(user.id),
+        submissionUrl: data.submissionUrl.trim(),
+        comment: data.comment?.trim() || "",
+        submittedAt: new Date().toISOString(),
       };
 
-      const createRes = await createSubmission(payload);
-      setExistingSubmission(createRes?.data || payload);
-      setSavedMsg("Ingeleverd! Bedankt.");
-      reset();
-    } catch (e) {
-      console.error("Create submission error:", e?.response?.data || e.message);
-      setServerErr(friendlyError(e, "Kon inlevering niet opslaan."));
+      const response = await createSubmission(payload);
+      setSubmitted(true);
+      setSubmissionData(response.data);
+    } catch (err) {
+      console.error("Error submitting homework:", err);
+      setError(err.response?.data?.message || "Kon huiswerk niet indienen");
     }
+  };
+
+  if (loading) {
+    return <p className="homework-loading">Laden...</p>;
   }
 
-  if (loading) return <Loader />;
-
-  // No homework assigned for this lesson (student view)
-  if (!homework) {
+  if (submitted && submissionData) {
     return (
-      <section className="hw-section">
-        <h3>Huiswerk inleveren</h3>
-        {serverErr && (
-          <p className="form-error" role="alert">
-            {serverErr}
-          </p>
-        )}
-        <p className="side__muted">Geen huiswerk toegewezen voor deze les.</p>
-      </section>
-    );
-  }
+      <div className="homework-submitted">
+        <h4 className="homework-submitted__title">
+          ✅ Je hebt dit huiswerk al ingeleverd
+        </h4>
 
-  // Already submitted → show the status
-  if (existingSubmission) {
-    return (
-      <section className="hw-section">
-        <h3>Huiswerk inleveren</h3>
-        {serverErr && (
-          <p className="form-error" role="alert">
-            {serverErr}
-          </p>
-        )}
-
-        <div className="hw-info">
-          <p>
-            <strong>Opdracht:</strong> {homework.title}
-          </p>
-          <p>
-            <strong>Deadline:</strong> {homework.dueDate}
-          </p>
-        </div>
-
-        <div className="hw-submission">
-          <p className="success">Je hebt al ingeleverd.</p>
-          <p>
-            Link:{" "}
+        {submissionData.submissionUrl && (
+          <p className="homework-submitted__link">
+            <strong>Link:</strong>{" "}
             <a
-              href={existingSubmission.submissionUrl}
+              href={submissionData.submissionUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
-              {existingSubmission.submissionUrl}
+              {submissionData.submissionUrl}
             </a>
           </p>
-        </div>
-      </section>
+        )}
+
+        {submissionData.comment && (
+          <div className="homework-submitted__comment">
+            <strong>Opmerking:</strong>
+            <p>{submissionData.comment}</p>
+          </div>
+        )}
+
+        {submissionData.submittedAt && (
+          <p className="homework-submitted__date">
+            Ingeleverd op:{" "}
+            {new Date(submissionData.submittedAt).toLocaleString("nl-NL")}
+          </p>
+        )}
+      </div>
     );
   }
 
-  // Not yet submitted → show form
   return (
-    <section className="hw-section">
-      <h3>Huiswerk inleveren</h3>
-      {serverErr && (
-        <p className="form-error" role="alert">
-          {serverErr}
-        </p>
-      )}
-      {savedMsg && (
-        <p className="form-success" role="status">
-          {savedMsg}
-        </p>
-      )}
+    <form onSubmit={handleSubmit(onSubmit)} className="homework-form">
+      <h4 className="homework-form__title">Huiswerk indienen</h4>
 
-      <div className="hw-info">
-        <p>
-          <strong>Opdracht:</strong> {homework.title}
-        </p>
-        <p>
-          <strong>Deadline:</strong> {homework.dueDate}
+      {error && <p className="homework-form__error">{error}</p>}
+
+      <div className="homework-form__field">
+        <label htmlFor="submissionUrl" className="homework-form__label">
+          Link naar je werk (Google Drive, Dropbox, etc.) *
+        </label>
+        <input
+          id="submissionUrl"
+          type="url"
+          className="homework-form__input"
+          placeholder="https://drive.google.com/..."
+          {...register("submissionUrl", {
+            required: "Link is verplicht",
+            pattern: {
+              value: /^https?:\/\/.+/,
+              message: "Link moet beginnen met http:// of https://",
+            },
+          })}
+        />
+        {errors.submissionUrl && (
+          <span className="homework-form__error">
+            {errors.submissionUrl.message}
+          </span>
+        )}
+        <p className="homework-form__hint">
+          💡 Upload je bestand naar Google Drive of Dropbox en plak hier de
+          deelbare link
         </p>
       </div>
 
-      <form
-        className="homework-form"
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-      >
-        <div className="form-row">
-          <label htmlFor="shs-url">Inleverlink (Drive/Docs)</label>
-          <input
-            id="shs-url"
-            type="url"
-            {...register("submissionUrl", {
-              required: "Verplicht",
-              maxLength: { value: 500, message: "Max. 500 tekens" },
-              pattern: {
-                value: /^https?:\/\/.+/i,
-                message: "Geef een geldige URL (https://...)",
-              },
-            })}
-            placeholder="https://..."
-          />
-          {errors.submissionUrl && (
-            <p className="form-error">{errors.submissionUrl.message}</p>
-          )}
-        </div>
+      <div className="homework-form__field">
+        <label htmlFor="comment" className="homework-form__label">
+          Opmerking (optioneel)
+        </label>
+        <textarea
+          id="comment"
+          className="homework-form__textarea"
+          rows="3"
+          placeholder="Voeg een opmerking toe aan je inlevering..."
+          {...register("comment", {
+            maxLength: {
+              value: 500,
+              message: "Opmerking mag maximaal 500 tekens bevatten",
+            },
+          })}
+        />
+        {errors.comment && (
+          <span className="homework-form__error">{errors.comment.message}</span>
+        )}
+      </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Inleveren…" : "Inleveren"}
-        </button>
-      </form>
-    </section>
+      <div className="homework-form__actions">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Bezig met indienen..." : "Indienen"}
+        </Button>
+      </div>
+    </form>
   );
 }

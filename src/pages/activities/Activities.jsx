@@ -1,14 +1,12 @@
-// src/pages/activities/Activities.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import { getActivities } from "../../services/activityService";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import { formatDate } from "../../helpers/formatDate";
 import { asArray } from "../../helpers/utils";
-
+import { Calendar, Clock, MapPin } from "lucide-react";
 import "./Activities.css";
 
 export default function Activities() {
@@ -36,14 +34,8 @@ export default function Activities() {
     })();
   }, []);
 
-  if (loading) {
-    return <Loader label="Activiteiten laden..." />;
-  }
-
-  if (err) {
-    return <ErrorNotice message={err} />;
-  }
-
+  if (loading) return <Loader label="Activiteiten laden..." />;
+  if (err) return <ErrorNotice message={err} />;
   if (!activities.length) {
     return (
       <div className="activities-page">
@@ -65,44 +57,57 @@ export default function Activities() {
         </p>
       </header>
 
-      <section className="activities-grid">
+      <div className="activities-grid">
         {activities.map((activity) => (
-          <article key={activity.id} className="activity-card">
-            <div className="activity-card__date">
-              {activity.date ? formatDate(activity.date, false) : "Datum volgt"}
+          <Link
+            key={activity.id}
+            to={`/activities/${activity.id}`}
+            className="activity-card"
+          >
+            <div className="activity-card__header">
+              <h3 className="activity-card__title">
+                {activity.title || "Activiteit"}
+              </h3>
             </div>
-            <h2 className="activity-card__title">
-              <Link to={`/activities/${activity.id}`}>{activity.title}</Link>
-            </h2>
-            <p className="activity-card__meta">
+
+            <div className="activity-card__meta">
+              <div className="activity-card__meta-item">
+                <Calendar size={16} />
+                <span>
+                  {activity.date
+                    ? formatDate(activity.date, false)
+                    : "Datum volgt"}
+                </span>
+              </div>
+
+              {activity.startTime && (
+                <div className="activity-card__meta-item">
+                  <Clock size={16} />
+                  <span>
+                    {activity.startTime}
+                    {activity.endTime ? ` - ${activity.endTime}` : ""}
+                  </span>
+                </div>
+              )}
+
               {activity.location && (
-                <span className="activity-card__location">
-                  📍 {activity.location}
-                </span>
+                <div className="activity-card__meta-item">
+                  <MapPin size={16} />
+                  <span>{activity.location}</span>
+                </div>
               )}
-              {activity.startTime && activity.endTime && (
-                <span className="activity-card__time">
-                  🕒 {activity.startTime}–{activity.endTime}
-                </span>
-              )}
-            </p>
+            </div>
+
             {activity.description && (
               <p className="activity-card__description">
-                {activity.description.length > 160
-                  ? activity.description.slice(0, 160) + "…"
+                {activity.description.length > 120
+                  ? `${activity.description.substring(0, 120)}...`
                   : activity.description}
               </p>
             )}
-
-            <Link
-              to={`/activities/${activity.id}`}
-              className="activity-card__link"
-            >
-              Details bekijken
-            </Link>
-          </article>
+          </Link>
         ))}
-      </section>
+      </div>
     </div>
   );
 }

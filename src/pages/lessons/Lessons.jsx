@@ -5,6 +5,7 @@ import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import { formatDate } from "../../helpers/formatDate";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import "./Lessons.css";
 
 export default function Lessons() {
@@ -38,16 +39,52 @@ export default function Lessons() {
   return (
     <section className="lessons">
       <h1 className="lessons__title">Lessen</h1>
-      <ul className="lessons__list">
-        {items.map((l) => (
-          <li key={l.id} className="lessons__item">
-            <Link className="lessons__link" to={`/lessons/${l.id}`}>
-              <span className="lessons__name">{l.title ?? "Les"}</span>
-              <span className="lessons__date">{formatDate(l.date, false)}</span>
-            </Link>
-          </li>
+      <div className="lessons__grid">
+        {items.map((lesson) => (
+          <Link
+            key={lesson.id}
+            to={`/lessons/${lesson.id}`}
+            className="lesson-card"
+          >
+            <div className="lesson-card__header">
+              <h3 className="lesson-card__title">{lesson.title || "Les"}</h3>
+              <span className="lesson-card__level">{lesson.level}</span>
+            </div>
+
+            <div className="lesson-card__meta">
+              <div className="lesson-card__meta-item">
+                <Calendar size={16} />
+                <span>{formatDate(lesson.date, false)}</span>
+              </div>
+
+              {lesson.startTime && (
+                <div className="lesson-card__meta-item">
+                  <Clock size={16} />
+                  <span>
+                    {lesson.startTime}
+                    {lesson.endTime ? ` - ${lesson.endTime}` : ""}
+                  </span>
+                </div>
+              )}
+
+              {lesson.location && (
+                <div className="lesson-card__meta-item">
+                  <MapPin size={16} />
+                  <span>{lesson.location}</span>
+                </div>
+              )}
+            </div>
+
+            {lesson.description && (
+              <p className="lesson-card__description">
+                {lesson.description.length > 100
+                  ? `${lesson.description.substring(0, 100)}...`
+                  : lesson.description}
+              </p>
+            )}
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }
