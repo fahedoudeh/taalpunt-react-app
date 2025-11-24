@@ -6,8 +6,10 @@ import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import Button from "../../components/ui/button/Button";
 import Modal from "../../components/ui/modal/Modal";
+import LikeButton from "../../components/social/LikeButton";
 import ReplyForm from "../../components/board/replyForm/ReplyForm";
 import { getMessageById } from "../../services/messageService";
+import { getLikes, createLike, deleteLike } from "../../services/likeService";
 import { getComments, createComment } from "../../services/commentService";
 import { formatDate } from "../../helpers/formatDate";
 import { MessageCircle } from "lucide-react";
@@ -18,6 +20,7 @@ export default function MessageDetail() {
   const { user } = useAuth();
 
   const [message, setMessage] = useState(null);
+  const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -47,30 +50,65 @@ export default function MessageDetail() {
     })();
   }, [id]);
 
-  // Fetch comments
+  // Fetch likes and comments
   useEffect(() => {
     if (!message?.id) return;
 
     (async () => {
       setLoadingComments(true);
       try {
-        const response = await getComments({ messageId: message.id });
-        const allComments = response?.data || [];
+        const [likesResponse, commentsResponse] = await Promise.all([
+          getLikes({ messageId: message.id }),
+          getComments({ messageId: message.id }),
+        ]);
 
-        // Filter comments for this specific message
+        const allLikes = likesResponse?.data || [];
+        const allComments = commentsResponse?.data || [];
+
+        // Filter for this specific message
+        const messageLikes = allLikes.filter(
+          (like) => Number(like.messageId) === Number(message.id)
+        );
         const messageComments = allComments.filter(
           (comment) => Number(comment.messageId) === Number(message.id)
         );
 
+        setLikes(messageLikes);
         setComments(messageComments);
       } catch (e) {
-        console.error("Error fetching comments:", e);
-        // Don't show error to user, just no comments
+        console.error("Error fetching social data:", e);
       } finally {
         setLoadingComments(false);
       }
     })();
   }, [message?.id]);
+
+  const handleLikeChange = async (action, likeId) => {
+    try {
+      if (action === "like") {
+        const payload = {
+          messageId: Number(message.id),
+          userId: Number(user.id),
+          createdAt: new Date().toISOString(),
+        };
+        const response = await createLike(payload);
+        const newLike = response.data;
+
+        setLikes((prev) => [...prev, newLike]);
+        return newLike.id;
+      } else {
+        await deleteLike(likeId);
+        setLikes((prev) => prev.filter((like) => like.id !== likeId));
+      }
+    } catch (error) {
+      console.error("Error handling like:", error);
+      setErrorModal({
+        isOpen: true,
+        message: "Kon like niet verwerken. Probeer het opnieuw.",
+      });
+      throw error;
+    }
+  };
 
   const handleSubmitComment = async (payload) => {
     try {
@@ -121,6 +159,15 @@ export default function MessageDetail() {
           <section className="message-detail__content">
             <p>{message.body ?? message.content ?? message.text ?? "—"}</p>
           </section>
+
+          {/* Social actions */}
+          <div className="message-detail__social">
+            <LikeButton
+              messageId={message.id}
+              initialLikes={likes}
+              onLikeChange={handleLikeChange}
+            />
+          </div>
         </article>
 
         {/* Comments Section */}

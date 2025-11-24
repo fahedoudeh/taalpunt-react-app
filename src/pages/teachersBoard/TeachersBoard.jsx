@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -6,6 +7,8 @@ import {
   updateMessage,
   deleteMessage,
 } from "../../services/messageService";
+import { getLikes } from "../../services/likeService";
+import { getComments } from "../../services/commentService";
 import PostForm from "../../components/board/postForm/PostForm";
 import PostCard from "../../components/board/postCard/PostCard";
 import Loader from "../../components/ui/loader/Loader";
@@ -14,13 +17,13 @@ import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
 import Modal from "../../components/ui/modal/Modal";
 import { sortByNewest } from "../../helpers/utils";
-
 import "./TeachersBoard.css";
 
 export default function TeachersBoard() {
   const { user } = useAuth();
 
   const [messages, setMessages] = useState([]);
+  const [messagesWithSocial, setMessagesWithSocial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -42,6 +45,9 @@ export default function TeachersBoard() {
       const { data } = await getTeacherMessages();
       const list = Array.isArray(data) ? data : [];
       setMessages(sortByNewest(list));
+
+      // Fetch social data
+      await fetchSocialData(list);
     } catch (e) {
       if (e.code === "ECONNABORTED") {
         setError("De server reageert traag. Probeer het zo nog eens.");
@@ -53,6 +59,46 @@ export default function TeachersBoard() {
       console.error("Teacher messages error:", e?.response?.data || e.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSocialData = async (messageList) => {
+    try {
+      // Fetch all likes and comments
+      const [likesResponse, commentsResponse] = await Promise.all([
+        getLikes(),
+        getComments(),
+      ]);
+
+      const allLikes = likesResponse?.data || [];
+      const allComments = commentsResponse?.data || [];
+
+      // Attach likes and comments to each message
+      const enriched = messageList.map((msg) => {
+        const messageLikes = allLikes.filter(
+          (like) => Number(like.messageId) === Number(msg.id)
+        );
+        const messageComments = allComments.filter(
+          (comment) => Number(comment.messageId) === Number(msg.id)
+        );
+
+        return {
+          ...msg,
+          likes: messageLikes,
+          comments: messageComments,
+        };
+      });
+
+      // SORT BY NEWEST -
+      setMessagesWithSocial(sortByNewest(enriched));
+    } catch (e) {
+      console.error("Error fetching social data:", e);
+      
+      setMessagesWithSocial(
+        sortByNewest(
+          messageList.map((msg) => ({ ...msg, likes: [], comments: [] }))
+        )
+      );
     }
   };
 
@@ -125,6 +171,8 @@ export default function TeachersBoard() {
       }
 
       handleClosePostModal();
+      // Refresh social data
+      await fetchMessages();
     } catch (e) {
       setError(
         editingMessage
@@ -153,6 +201,9 @@ export default function TeachersBoard() {
     try {
       await deleteMessage(messageId);
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      setMessagesWithSocial((prev) =>
+        prev.filter((msg) => msg.id !== messageId)
+      );
     } catch (e) {
       setError("Kon bericht niet verwijderen. Probeer het opnieuw.");
       console.error(
@@ -162,6 +213,11 @@ export default function TeachersBoard() {
     } finally {
       setDeleteTarget(null);
     }
+  };
+
+  const handleDataChange = async () => {
+    // Refresh social data when likes/comments change
+    await fetchSocialData(messages);
   };
 
   if (loading) return <Loader label="Docentenberichten laden..." />;
@@ -185,16 +241,16 @@ export default function TeachersBoard() {
         {error && <ErrorNotice message={error} />}
 
         <div className="teacher-board__messages">
-          {messages.length === 0 ? (
+          {messagesWithSocial.length === 0 ? (
             <EmptyState
               title="Nog geen docentenberichten"
-              message="Gebruik dit board om met collega’s af te stemmen."
+              message="Gebruik dit board om met collega's af te stemmen."
               actionLabel="Eerste docentenbericht plaatsen"
               onClick={openNewPostModal}
             />
           ) : (
             <div className="teacher-board__grid">
-              {messages.map((message) => {
+              {messagesWithSocial.map((message) => {
                 const numericUserId = getNumericUserId();
                 const isOwner =
                   numericUserId &&
@@ -205,10 +261,13 @@ export default function TeachersBoard() {
                   <PostCard
                     key={message.id}
                     message={message}
+                    likes={message.likes || []}
+                    comments={message.comments || []}
                     onEdit={() => handleEditMessage(message)}
                     onDelete={() => handleDeleteClick(message)}
-                    canEdit={isOwner || user?.role === "admin"}
-                    canDelete={isOwner || user?.role === "admin"}
+                    canEdit={isOwner || user?.roles?.includes("admin")}
+                    canDelete={isOwner || user?.roles?.includes("admin")}
+                    onDataChange={handleDataChange}
                   />
                 );
               })}

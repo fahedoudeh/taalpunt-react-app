@@ -1,3 +1,4 @@
+// src/pages/board/Board.jsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -6,6 +7,8 @@ import {
   updateMessage,
   deleteMessage,
 } from "../../services/messageService";
+import { getLikes } from "../../services/likeService";
+import { getComments } from "../../services/commentService";
 import PostCard from "../../components/board/postCard/PostCard";
 import PostForm from "../../components/board/postForm/PostForm";
 import Loader from "../../components/ui/loader/Loader";
@@ -20,6 +23,7 @@ export default function Board() {
   const { user } = useAuth();
 
   const [messages, setMessages] = useState([]);
+  const [messagesWithSocial, setMessagesWithSocial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -42,10 +46,14 @@ export default function Board() {
     setLoading(true);
     setError("");
     try {
+      // Fetch messages
       const { data } = await getMessages();
       const list = Array.isArray(data) ? data : [];
       const communityOnly = list.filter((m) => !m.teachersOnly);
       setMessages(sortByNewest(communityOnly));
+
+      // Fetch likes and comments for all messages
+      await fetchSocialData(communityOnly);
     } catch (e) {
       if (e.code === "ECONNABORTED") {
         setError("De server reageert traag. Probeer het zo nog eens.");
@@ -58,6 +66,45 @@ export default function Board() {
     }
   };
 
+  const fetchSocialData = async (messageList) => {
+    try {
+      // Fetch all likes and comments
+      const [likesResponse, commentsResponse] = await Promise.all([
+        getLikes(),
+        getComments(),
+      ]);
+
+      const allLikes = likesResponse?.data || [];
+      const allComments = commentsResponse?.data || [];
+
+      // Attach likes and comments to each message
+      const enriched = messageList.map((msg) => {
+        const messageLikes = allLikes.filter(
+          (like) => Number(like.messageId) === Number(msg.id)
+        );
+        const messageComments = allComments.filter(
+          (comment) => Number(comment.messageId) === Number(msg.id)
+        );
+
+        return {
+          ...msg,
+          likes: messageLikes,
+          comments: messageComments,
+        };
+      });
+
+      // SORT BY NEWEST - FIX HERE
+      setMessagesWithSocial(sortByNewest(enriched));
+    } catch (e) {
+      console.error("Error fetching social data:", e);
+      // Still show messages even if social data fails
+      setMessagesWithSocial(
+        sortByNewest(
+          messageList.map((msg) => ({ ...msg, likes: [], comments: [] }))
+        )
+      );
+    }
+  };
   const openNewPostModal = () => {
     setEditingMessage(null);
     setIsPostModalOpen(true);
@@ -123,6 +170,8 @@ export default function Board() {
       }
 
       handleClosePostModal();
+      // Refresh social data
+      await fetchMessages();
     } catch (e) {
       setError(
         editingMessage
@@ -148,12 +197,18 @@ export default function Board() {
     try {
       await deleteMessage(id);
       setMessages((prev) => prev.filter((msg) => msg.id !== id));
+      setMessagesWithSocial((prev) => prev.filter((msg) => msg.id !== id));
     } catch (e) {
       setError("Kon bericht niet verwijderen. Probeer het opnieuw.");
       console.error("Board delete error:", e?.response?.data || e.message);
     } finally {
       setDeleteTarget(null);
     }
+  };
+
+  const handleDataChange = async () => {
+    // Refresh social data when likes/comments change
+    await fetchSocialData(messages);
   };
 
   if (loading) return <Loader label="Berichten laden..." />;
@@ -176,7 +231,7 @@ export default function Board() {
         {error && <ErrorNotice message={error} />}
 
         <div className="board__content">
-          {messages.length === 0 ? (
+          {messagesWithSocial.length === 0 ? (
             <EmptyState
               title="Nog geen berichten"
               message="Wees de eerste die iets deelt op het board."
@@ -185,7 +240,7 @@ export default function Board() {
             />
           ) : (
             <div className="board__list">
-              {messages.map((message) => {
+              {messagesWithSocial.map((message) => {
                 const numericUserId = getNumericUserId();
                 const isOwner =
                   numericUserId &&
@@ -196,10 +251,13 @@ export default function Board() {
                   <PostCard
                     key={message.id}
                     message={message}
+                    likes={message.likes || []}
+                    comments={message.comments || []}
                     onEdit={() => handleEditMessage(message)}
                     onDelete={() => handleDeleteClick(message)}
-                    canEdit={isOwner || user?.role === "admin"}
-                    canDelete={isOwner || user?.role === "admin"}
+                    canEdit={isOwner || user?.roles?.includes("admin")}
+                    canDelete={isOwner || user?.roles?.includes("admin")}
+                    onDataChange={handleDataChange}
                   />
                 );
               })}

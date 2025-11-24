@@ -8,22 +8,30 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   // derive user info from JWT for roles, email, etc.
-   const user = useMemo(() => {
-     if (!token) return null;
-     try {
-       const p = jwtDecode(token);
-       const role = p.role ?? null; // single string
-       return {
-         id: p.userId ?? p.sub ?? null,
-         email: p.email ?? null,
-         role, // "user", "teacher", ...
-         roles: role ? [role] : [], // handy for “includes”
-         projectId: p.projectId ?? null,
-       };
-     } catch {
-       return null;
-     }
-   }, [token]);
+  const user = useMemo(() => {
+    if (!token) return null;
+    try {
+      const p = jwtDecode(token);
+
+      // Handle role (could be string OR array from NOVI API)
+      let roles = [];
+      if (Array.isArray(p.role)) {
+        roles = p.role; // Already an array
+      } else if (typeof p.role === "string") {
+        roles = [p.role]; // Wrap string in array
+      }
+
+      return {
+        id: p.userId ?? p.sub ?? null,
+        email: p.email ?? null,
+        role: roles[0] ?? null, // Primary role (backward compatibility)
+        roles: roles, // Full array for .includes() checks
+        projectId: p.projectId ?? null,
+      };
+    } catch {
+      return null;
+    }
+  }, [token]);
 
   const login = (newToken) => {
     localStorage.setItem("token", newToken);

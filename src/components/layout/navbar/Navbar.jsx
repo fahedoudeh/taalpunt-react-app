@@ -233,6 +233,7 @@ export default function Navbar() {
 
           <NavLink
             to="/board"
+            end
             className={({ isActive }) =>
               `navbar__icon-link ${isActive ? "navbar__icon-link--active" : ""}`
             }

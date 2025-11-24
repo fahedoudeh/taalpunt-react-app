@@ -167,3 +167,78 @@
   background-color: #f9fafb;
   border-radius: 8px;
 }
+
+
+/* Attendance summary for teachers */
+.lesson-attendance-summary {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.lesson-attendance-summary h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.attendance-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.attendance-stat {
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.attendance-stat__label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.attendance-stat__count {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.attendance-stat--coming {
+  border-color: #22c55e;
+}
+
+.attendance-stat--coming .attendance-stat__count {
+  color: #16a34a;
+}
+
+.attendance-stat--maybe {
+  border-color: #f59e0b;
+}
+
+.attendance-stat--maybe .attendance-stat__count {
+  color: #d97706;
+}
+
+.attendance-stat--not-coming {
+  border-color: #ef4444;
+}
+
+.attendance-stat--not-coming .attendance-stat__count {
+  color: #dc2626;
+}
+
+@media (max-width: 640px) {
+  .attendance-stats {
+    grid-template-columns: 1fr;
+  }
+}
