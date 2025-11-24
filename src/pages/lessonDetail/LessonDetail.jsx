@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getLessonById } from "../../services/lessonService";
-import { getHomework } from "../../services/homeworkService";
 import { useAuth } from "../../contexts/AuthContext";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import Button from "../../components/ui/button/Button";
+import { getHomework, deleteHomework } from "../../services/homeworkService";
 import TeacherHomeworkForm from "../../components/lesson/homeworkForm/TeacherHomeworkForm";
 import StudentHomeworkSubmit from "../../components/lesson/homeworkForm/StudentHomeworkSubmit";
+import Modal from "../../components/ui/modal/Modal";
 import "./LessonDetail.css";
 
 export default function LessonDetail() {
@@ -19,6 +20,8 @@ export default function LessonDetail() {
   const [lesson, setLesson] = useState(null);
   const [homework, setHomework] = useState(null);
   const [showHomeworkForm, setShowHomeworkForm] = useState(false);
+  const [deleteHomeworkModal, setDeleteHomeworkModal] = useState(false);
+  const [errorModal, setErrorModal] = useState({ isOpen: false, message: "" });
   const [loading, setLoading] = useState(true);
   const [loadingHomework, setLoadingHomework] = useState(false);
   const [err, setErr] = useState("");
@@ -80,6 +83,20 @@ export default function LessonDetail() {
         console.error("Error refreshing homework:", e);
       }
     })();
+  };
+
+  const handleDeleteHomework = async () => {
+    try {
+      await deleteHomework(homework.id);
+      setHomework(null);
+      setDeleteHomeworkModal(false);
+    } catch (e) {
+      console.error("Error deleting homework:", e);
+      setErrorModal({
+        isOpen: true,
+        message: "Kon huiswerk niet verwijderen. Probeer het opnieuw.",
+      });
+    }
   };
 
   if (loading) return <Loader />;
@@ -164,6 +181,12 @@ export default function LessonDetail() {
                       <Button onClick={() => setShowHomeworkForm(true)}>
                         ✏️ Huiswerk Bewerken
                       </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => setDeleteHomeworkModal(true)}
+                      >
+                        🗑️ Verwijderen
+                      </Button>
                     </div>
                   </div>
                 ) : (
@@ -211,6 +234,23 @@ export default function LessonDetail() {
           </>
         )}
       </div>
+      <Modal
+        isOpen={deleteHomeworkModal}
+        title="Huiswerk verwijderen"
+        message="Weet je zeker dat je dit huiswerk wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+        confirmLabel="Ja, verwijderen"
+        cancelLabel="Annuleren"
+        onConfirm={handleDeleteHomework}
+        onCancel={() => setDeleteHomeworkModal(false)}
+      />
+      <Modal
+        isOpen={errorModal.isOpen}
+        title="Fout"
+        message={errorModal.message}
+        confirmLabel="OK"
+        onConfirm={() => setErrorModal({ isOpen: false, message: "" })}
+        onCancel={() => setErrorModal({ isOpen: false, message: "" })}
+      />
     </section>
   );
 }
