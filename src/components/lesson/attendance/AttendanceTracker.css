@@ -1,0 +1,119 @@
+
+
+.attendance-tracker {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.attendance-tracker__title {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.attendance-tracker__buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.attendance-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.875rem 0.5rem;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.attendance-btn:hover {
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.attendance-btn svg {
+  color: currentColor;
+}
+
+.attendance-btn__count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Coming button */
+.attendance-btn--coming:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.attendance-btn--coming.attendance-btn--active {
+  background-color: #dcfce7;
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
+/* Maybe button */
+.attendance-btn--maybe:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.attendance-btn--maybe.attendance-btn--active {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+  color: #d97706;
+}
+
+/* Not coming button */
+.attendance-btn--not-coming:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.attendance-btn--not-coming.attendance-btn--active {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.attendance-tracker__status {
+  margin: 1rem 0 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .attendance-tracker__buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-btn {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
