@@ -7,6 +7,7 @@ import {
   deleteLesson,
 } from "../../services/lessonService";
 import { getHomework, getSubmissions } from "../../services/homeworkService";
+import { getUsers } from "../../services/userService";
 import { getEnrollments } from "../../services/enrollmentService";
 import {
   getActivities,
@@ -135,29 +136,74 @@ export default function TeachersRoom() {
   };
 
   const fetchEnrollmentsData = async () => {
-    const { data } = await getEnrollments();
-    setEnrollments(Array.isArray(data) ? data : []);
+    try {
+      const [enrollmentsRes, usersRes] = await Promise.allSettled([
+        getEnrollments(),
+        getUsers(),
+      ]);
+
+      const enrollments =
+        enrollmentsRes.status === "fulfilled" ? enrollmentsRes.value.data : [];
+      const users = usersRes.status === "fulfilled" ? usersRes.value.data : [];
+
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] = {
+          username: user.username || user.email?.split("@")[0] || "Onbekend",
+          email: user.email || "—",
+        };
+      });
+
+      const enrichedEnrollments = enrollments.map((enrollment) => ({
+        ...enrollment,
+        studentName:
+          enrollment.studentName ||
+          userMap[enrollment.studentId]?.username ||
+          "Onbekend",
+        studentEmail:
+          enrollment.studentEmail ||
+          userMap[enrollment.studentId]?.email ||
+          "—",
+      }));
+
+      setEnrollments(
+        Array.isArray(enrichedEnrollments) ? enrichedEnrollments : []
+      );
+    } catch (error) {
+      console.error("Fetch enrollments error:", error);
+      setEnrollments([]);
+    }
   };
 
   const fetchHomeworkData = async () => {
     try {
-      const [homeworkRes, submissionsRes] = await Promise.allSettled([
+      const [homeworkRes, submissionsRes, usersRes] = await Promise.allSettled([
         getHomework(),
         getSubmissions(),
+        getUsers(),
       ]);
 
       const homework =
         homeworkRes.status === "fulfilled" ? homeworkRes.value.data : [];
       const submissions =
         submissionsRes.status === "fulfilled" ? submissionsRes.value.data : [];
+      const users = usersRes.status === "fulfilled" ? usersRes.value.data : [];
 
-      // Merge submissions with homework and student data
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] =
+          user.username || user.email?.split("@")[0] || "Onbekende cursist";
+      });
+
       const enrichedSubmissions = submissions.map((submission) => {
         const hw = homework.find((h) => h.id === submission.homeworkId);
         return {
           ...submission,
           lessonTitle: hw?.title || "Onbekend huiswerk",
-          studentName: submission.studentName || "Onbekende cursist",
+          studentName:
+            submission.studentName ||
+            userMap[submission.studentId] ||
+            "Onbekende cursist",
           submittedAt:
             submission.submittedAt ||
             submission.createdAt ||
@@ -272,10 +318,20 @@ export default function TeachersRoom() {
 
   const handleSaveHomeworkFeedback = async (submissionId, feedback) => {
     try {
+      // Find the submission to get all required fields
+      const submission = homeworkSubmissions.find((s) => s.id === submissionId);
+
+      if (!submission) {
+        throw new Error("Submission not found");
+      }
+
+      // Send complete submission object with updated fields
       await updateSubmission(submissionId, {
+        homeworkId: submission.homeworkId,
+        studentId: submission.studentId,
+        content: submission.content,
         feedback: feedback,
         reviewed: true,
-        reviewedAt: new Date().toISOString(),
       });
 
       // Update local state
