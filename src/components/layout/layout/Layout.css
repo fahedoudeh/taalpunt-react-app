@@ -1,37 +1,100 @@
 
+
 .layout {
   display: grid;
-
-  
   grid-template-columns: 340px minmax(0, 1fr) 340px;
-  gap: 2.25rem;
-
-  
+  gap: 1.5rem;
   max-width: 1800px;
   margin: 0 auto;
-
-  background-color: #f0f2f5;
-  padding: 0.75rem 0.5rem;
+  background-color: var(--color-background);
+  padding: 0;
   box-sizing: border-box;
   align-items: flex-start;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
 }
 
+.layout__left,
+.layout__right {
+  height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: sticky;
+  top: var(--navbar-height);
+  padding: 1.5rem 1rem;
+}
+
+.layout__left {
+  background: var(--color-white);
+  border-right: 1px solid var(--color-border);
+}
+
+.layout__right {
+  background: var(--color-white);
+  border-left: 1px solid var(--color-border);
+}
+
+.layout__main {
+  padding: 1.5rem;
+  overflow-y: auto;
+  height: calc(100vh - var(--navbar-height));
+}
+
+/* Custom scrollbar for sidebars */
+.layout__left::-webkit-scrollbar,
+.layout__right::-webkit-scrollbar,
+.layout__main::-webkit-scrollbar {
+  width: 0px;
+  display: none;
+}
+
+.layout__left::-webkit-scrollbar-track,
+.layout__right::-webkit-scrollbar-track,
+.layout__main::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+.layout__left::-webkit-scrollbar-thumb,
+.layout__right::-webkit-scrollbar-thumb,
+.layout__main::-webkit-scrollbar-thumb {
+  background: var(--color-light-gray);
+  border-radius: var(--radius-full);
+}
+
+.layout__left::-webkit-scrollbar-thumb:hover,
+.layout__right::-webkit-scrollbar-thumb:hover,
+.layout__main::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray);
+}
+
+/* Responsive */
 
 @media (max-width: 1200px) {
   .layout {
     grid-template-columns: 270px minmax(0, 1fr) 270px;
-    max-width: 1400px;
-    gap: 1.75rem;
-    padding: 0.75rem;
+    gap: 1rem;
   }
 }
-
 
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
-    max-width: 100%;
-    padding: 1rem;
     gap: 1rem;
+    height: auto;
+    overflow: visible;
+  }
+
+  .layout__left,
+  .layout__right {
+    position: static;
+    height: auto;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    overflow: visible;
+  }
+
+  .layout__main {
+    height: auto;
+    overflow: visible;
   }
 }

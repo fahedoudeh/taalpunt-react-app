@@ -1,53 +1,90 @@
+/* src/components/layout/sidebar/UpcomingSidebar.css */
 
-.upcoming-error {
-  font-size: 0.8rem;
-  color: #b91c1c;
-  margin: 0;
+/* Grid for sub-cards */
+
+.upcoming-grid,
+.berichten-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.upcoming-loading,
-.upcoming-empty {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin: 0;
-}
+/* Sub-cards for Binnenkort */
 
-.upcoming-list {
-  margin: 0;
-  padding-left: 1.1rem;
-}
-
-.upcoming-item {
-  font-size: 0.82rem;
-  margin-bottom: 0.25rem;
-  color: #111827;
-}
-
-.upcoming-link {
+.upcoming-subcard {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-blue);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem;
   text-decoration: none;
-  color: inherit;
+  display: block;
+  transition: all 0.2s ease;
 }
 
-.upcoming-prefix {
+.upcoming-subcard:hover {
+  background: var(--color-white);
+  border-left-color: var(--color-orange);
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.upcoming-subcard__badge {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.upcoming-subcard__title {
+  display: block;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin-right: 0.25rem;
+  color: var(--color-black);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
 }
 
-.upcoming-date {
+.upcoming-subcard__meta {
   display: block;
-  color: #6b7280;
+  font-size: 0.7rem;
+  color: var(--color-dark-gray);
 }
 
-.upcoming-location {
+/* Sub-cards for Berichten */
+
+.berichten-subcard {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-orange);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem;
+  text-decoration: none;
   display: block;
-  color: #9ca3af;
+  transition: all 0.2s ease;
 }
 
-.upcoming-post-title {
+.berichten-subcard:hover {
+  background: var(--color-white);
+  border-left-color: var(--color-blue);
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.berichten-subcard__title {
+  display: block;
+  font-size: 0.8rem;
   font-weight: 600;
+  color: var(--color-black);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
 }
 
-.upcoming-post-date {
+.berichten-subcard__meta {
   display: block;
-  color: #6b7280;
+  font-size: 0.7rem;
+  color: var(--color-dark-gray);
 }

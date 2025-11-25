@@ -1,14 +1,66 @@
-body {
-  background-color: #f0f2f5;
-}
-html,
-body {
+@import './styles/variables.css';
+
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 body {
-  background-color: #f0f2f5; 
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-black);
+  line-height: 1.5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-light-gray);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray);
+}
+
+/* Links */
+a {
+  color: var(--color-blue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-orange);
+}
+
+/* Buttons - global defaults */
+button {
+  font-family: inherit;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
 }

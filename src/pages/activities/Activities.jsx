@@ -50,7 +50,7 @@ export default function Activities() {
   return (
     <div className="activities-page">
       <header className="activities-header">
-        <h1>Activiteiten</h1>
+        <h1>Evenementen</h1>
         <p>
           Bijeenkomsten, koffiemomenten en extra taalactiviteiten van Taalpunt
           Kapelle.

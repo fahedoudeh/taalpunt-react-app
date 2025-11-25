@@ -52,16 +52,18 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <header className="auth-header">
-          <div className="auth-logo">
-            <span className="auth-logo-main">Taal</span>
-            <span className="auth-logo-accent">punt</span>
+          <div className="auth-branding">
+            <h1 className="auth-branding__title">
+              <span className="auth-branding__taal">Taal</span>
+              <span className="auth-branding__punt">punt</span>
+            </h1>
+            <p className="auth-branding__slogan">
+              Koffie, thee en taal – een goed verhaal
+            </p>
+            <p className="auth-branding__subtitle">
+              Log in om je lessen, activiteiten en het Taalpunt-board te zien.
+            </p>
           </div>
-          <p className="auth-tagline">
-            Koffie, thee en taal – een goed verhaal.
-          </p>
-          <p className="auth-intro">
-            Log in om je lessen, activiteiten en het Taalpunt-board te zien.
-          </p>
         </header>
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>

@@ -1,31 +1,78 @@
 /* src/components/dashboard/OverviewCard.css */
+
 .ovc {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-.ovc + .ovc {
-  margin-top: 1rem;
+
+.ovc:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
+
 .ovc__head {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border);
 }
+
 .ovc__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-blue);
   margin: 0;
-  font-size: 1.05rem;
-  color: #111827;
 }
+
 .ovc__more {
-  font-size: 0.9rem;
-  color: #001489;
+  font-size: 0.875rem;
+  color: var(--color-orange);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.ovc__more:hover {
+  color: var(--color-dark-orange);
   text-decoration: underline;
 }
-.ovc__body > ul {
-  margin: 0;
-  padding: 0;
+
+.ovc__body {
+  flex: 1;
+}
+
+.ovc ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ovc li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-background);
+}
+
+.ovc li:last-child {
+  border-bottom: none;
+}
+
+.ovc a {
+  color: var(--color-black);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+  display: block;
+}
+
+.ovc a:hover {
+  color: var(--color-blue);
 }

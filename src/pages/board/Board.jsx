@@ -218,7 +218,7 @@ export default function Board() {
       <div className="board__inner">
         <div className="board__header">
           <div>
-            <h1 className="board__title">Community Board</h1>
+            <h1 className="board__title">Prikbord</h1>
             <p className="board__subtitle">
               Deel tips, stel vragen en praat mee met andere cursisten.
             </p>

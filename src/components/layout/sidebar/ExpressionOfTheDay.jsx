@@ -1,9 +1,7 @@
-
+// src/components/layout/sidebar/ExpressionOfTheDay.jsx
 import { useState, useMemo } from "react";
 import { EXPRESSIONS } from "../../../data/expressions";
 import { todayPick } from "../../../helpers/dailyPick";
-import "../sidebar/Sidebar.css";
-
 
 export default function ExpressionOfTheDay() {
   const pick = useMemo(() => todayPick(EXPRESSIONS), []);
@@ -12,35 +10,28 @@ export default function ExpressionOfTheDay() {
   if (!pick) return null;
 
   return (
-    <section className="side__section" aria-labelledby="eotd-title">
-      <h3 id="eotd-title" className="side__title">
-        Uitdrukking van de dag
-      </h3>
+    <div className="right__card">
+      <h4 className="right__title">Uitdrukking van de dag</h4>
 
-      <div className="side__card">
-        <div className="side__word">{pick.term}</div>
-        <div className="side__muted">{pick.meaning}</div>
+      <div className="daily-term">{pick.term}</div>
+      <p className="daily-meaning">{pick.meaning}</p>
 
-        <button
-          type="button"
-          className="side__linkbtn"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-         
-        >
-          {open ? "Minder voorbeelden" : "Voorbeelden"}
-        </button>
+      <button
+        type="button"
+        className="daily-toggle"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        {open ? "Minder voorbeelden" : "Voorbeelden"}
+      </button>
 
-        {open && (
-          <ul className="side__list">
-            {pick.examples.slice(0, 3).map((ex, i) => (
-              <li key={i} className="side__muted">
-                • {ex}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </section>
+      {open && (
+        <ul className="daily-examples">
+          {pick.examples.slice(0, 3).map((ex, i) => (
+            <li key={i}>{ex}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

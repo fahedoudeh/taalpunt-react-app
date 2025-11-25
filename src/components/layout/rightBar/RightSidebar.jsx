@@ -2,24 +2,26 @@
 import "./RightSidebar.css";
 import WordOfTheDay from "../sidebar/WordOfTheDay";
 import ExpressionOfTheDay from "../sidebar/ExpressionOfTheDay";
+import { JOKES } from "../../../data/jokes";
 
 const links = [
-  { href: "/board", label: "📣 Populaire berichten" },
-  { href: "/activities", label: "🎈 Activiteiten in de buurt" },
-  { href: "/lessons", label: "📘 Alle lessen" },
+  { href: "/board", label: "Populaire berichten" },
+  { href: "/activities", label: "Activiteiten in de buurt" },
+  { href: "/lessons", label: "Alle lessen" },
 ];
 
-function CookingTip() {
-  const tips = [
-    "Voeg een laurierblad toe aan soep voor extra diepte.",
-    "Kook aardappels met schil: meer smaak en minder werk.",
-    "Bak uien langzaam voor een zoete, zachte smaak.",
-  ];
-  const index = new Date().getDate() % tips.length;
+function JokeOfTheDay() {
+  const dayOfYear = Math.floor(
+    (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000
+  );
+  const index = dayOfYear % JOKES.length;
+  const joke = JOKES[index];
+
   return (
-    <div className="right__card">
-      <h3 className="right__title">Kooktip van de dag</h3>
-      <p>{tips[index]}</p>
+    <div className="right__card right__card--joke">
+      <h3 className="right__title">Grap van de Dag</h3>
+      <p className="right__joke-setup">{joke.setup}</p>
+      <p className="right__joke-punchline">{joke.punchline}</p>
     </div>
   );
 }
@@ -27,37 +29,22 @@ function CookingTip() {
 export default function RightSidebar() {
   return (
     <aside className="right">
-      {/* Word + Expression */}
-      <section className="right__section">
-        <div className="right__card">
-          <WordOfTheDay />
-        </div>
+      <WordOfTheDay />
+      <ExpressionOfTheDay />
+      <JokeOfTheDay />
 
-        <div className="right__card">
-          <ExpressionOfTheDay />
-        </div>
-      </section>
-
-      {/* Cooking tip */}
-      <section className="right__section">
-        <CookingTip />
-      </section>
-
-      {/* Handige links */}
-      <section className="right__section">
-        <div className="right__card">
-          <h3 className="right__title">Handige links</h3>
-          <ul className="right__list">
-            {links.map((l) => (
-              <li key={l.href}>
-                <a className="right__link" href={l.href}>
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <div className="right__card">
+        <h3 className="right__title">Handige links</h3>
+        <ul className="right__list">
+          {links.map((l) => (
+            <li key={l.href}>
+              <a className="right__link" href={l.href}>
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }

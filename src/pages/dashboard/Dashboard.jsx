@@ -322,7 +322,7 @@ export default function Dashboard() {
       <section className="dashboard-hero">
         <div className="dashboard-hero-left">
           <p className="dashboard-hero-label">
-            {isTeacher ? "Welkom terug, docent 👋" : "Welkom terug 👋"}
+            {isTeacher ? "Welkom terug, docent" : "Welkom terug"}
           </p>
 
           <h1 className="dashboard-hero-title">
@@ -339,7 +339,7 @@ export default function Dashboard() {
           </h1>
 
           <p className="dashboard-hero-subtitle">
-            Overzicht van je lessen, activiteiten en het Taalpunt board.
+            Overzicht van je lessen, activiteiten en het Taalpunt prikbord.
           </p>
 
           <p className="dashboard-hero-meta">
@@ -454,7 +454,7 @@ export default function Dashboard() {
         </OverviewCard>
 
         {/* Community Board posts */}
-        <OverviewCard title="Board berichten" moreTo="/board">
+        <OverviewCard title="Prikbord berichten" moreTo="/board">
           {postsLoading && <Loader label="Berichten laden…" />}
           {!postsLoading && postsErr && <ErrorNotice message={postsErr} />}
           {!postsLoading && !postsErr && communityPosts.length === 0 && (
@@ -480,7 +480,7 @@ export default function Dashboard() {
 
         {/* Teacher Board preview – only for teachers/admin */}
         {isTeacher && (
-          <OverviewCard title="Docentenboard" moreTo="/teachers-board">
+          <OverviewCard title="Docentenkamer" moreTo="/teachers-board">
             {postsLoading && <Loader label="Berichten laden…" />}
             {!postsLoading && postsErr && <ErrorNotice message={postsErr} />}
             {!postsLoading && !postsErr && teacherPosts.length === 0 && (

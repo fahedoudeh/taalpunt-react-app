@@ -61,23 +61,25 @@ export default function Register() {
     <div className="auth-page">
       <div className="auth-card">
         <header className="auth-header">
-          <div className="auth-logo">
-            <span className="auth-logo-main">Taal</span>
-            <span className="auth-logo-accent">punt</span>
+          <div className="auth-branding">
+            <h1 className="auth-branding__title">
+              <span className="auth-branding__taal">Taal</span>
+              <span className="auth-branding__punt">punt</span>
+            </h1>
+            <p className="auth-branding__slogan">
+              Koffie, thee en taal – een goed verhaal
+            </p>
+            <p className="auth-branding__subtitle">
+              Maak een account aan als cursist of docent en sluit je aan bij
+              Taalpunt Kapelle.
+            </p>
           </div>
-          <p className="auth-tagline">
-            Koffie, thee en taal – een goed verhaal.
-          </p>
-          <p className="auth-intro">
-            Maak een account aan als cursist of docent en sluit je aan bij
-            Taalpunt Kapelle.
-          </p>
         </header>
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="auth-field">
             <label className="auth-label" htmlFor="username">
-              Gebruikersnaam
+              Naam
             </label>
             <input
               id="username"

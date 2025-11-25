@@ -1,4 +1,4 @@
-
+// src/components/layout/sidebar/UpcomingSidebar.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -31,21 +31,18 @@ export default function UpcomingSidebar() {
           getMessages(),
         ]);
 
-        // Lessons
         const lessons =
           lessonsRes.status === "fulfilled" &&
           Array.isArray(lessonsRes.value?.data)
             ? lessonsRes.value.data
             : [];
 
-        // Activities
         const activities =
           activitiesRes.status === "fulfilled" &&
           Array.isArray(activitiesRes.value?.data)
             ? activitiesRes.value.data
             : [];
 
-        // Posts (community only: no teachersOnly)
         const allPosts =
           postsRes.status === "fulfilled" && Array.isArray(postsRes.value?.data)
             ? postsRes.value.data
@@ -53,7 +50,6 @@ export default function UpcomingSidebar() {
 
         const communityPosts = allPosts.filter((post) => !post.teachersOnly);
 
-        // Build upcoming list (lessons + activities) → soonest first
         const upcomingLessons = sortByUpcomingDateTime(
           lessons,
           "date",
@@ -72,7 +68,6 @@ export default function UpcomingSidebar() {
             title: lesson.title || "Les",
             date: lesson.date,
             startTime: lesson.startTime,
-            location: lesson.location,
           })),
           ...upcomingActivities.map((activity) => ({
             type: "activity",
@@ -80,15 +75,11 @@ export default function UpcomingSidebar() {
             title: activity.title || "Activiteit",
             date: activity.date,
             startTime: activity.startTime,
-            location: activity.location,
           })),
         ];
 
-        // Only keep the next 4 upcoming items
-        const nextUpcoming = take(combinedUpcoming, 4);
-
-        // Latest 4 community posts, newest first
-        const latest = take(sortByNewest(communityPosts, "createdAt"), 4);
+        const nextUpcoming = take(combinedUpcoming, 3);
+        const latest = take(sortByNewest(communityPosts, "createdAt"), 3);
 
         if (!isCancelled) {
           setUpcomingItems(nextUpcoming);
@@ -111,75 +102,73 @@ export default function UpcomingSidebar() {
 
   return (
     <>
-      {/* Binnenkort: komende lessen + activiteiten */}
-      <section className="side__section">
-        <h3 className="side__title">Binnenkort</h3>
+      {/* Card 1: Binnenkort */}
+      <div className="sidebar-card">
+        <h3 className="sidebar-card__title">Binnenkort</h3>
 
-        {error && <p className="upcoming-error">{error}</p>}
+        {error && <p className="sidebar-card__error">{error}</p>}
 
         {!error && upcomingItems.length === 0 && (
-          <p className="upcoming-empty">Geen komende lessen of activiteiten.</p>
+          <p className="sidebar-card__empty">Geen komende items</p>
         )}
 
         {!error && upcomingItems.length > 0 && (
-          <ul className="upcoming-list">
+          <div className="upcoming-grid">
             {upcomingItems.map((item) => (
-              <li key={`${item.type}-${item.id}`} className="upcoming-item">
-                <Link
-                  to={
-                    item.type === "lesson"
-                      ? `/lessons/${item.id}`
-                      : `/activities/${item.id}`
-                  }
-                  className="upcoming-link"
-                >
-                  <span className="upcoming-prefix">
-                    {item.type === "lesson" ? "Les:" : "Activiteit:"}
+              <Link
+                key={`${item.type}-${item.id}`}
+                to={
+                  item.type === "lesson"
+                    ? `/lessons/${item.id}`
+                    : `/activities/${item.id}`
+                }
+                className="upcoming-subcard"
+              >
+                <span className="upcoming-subcard__badge">
+                  {item.type === "lesson" ? "Les" : "Activiteit"}
+                </span>
+                <span className="upcoming-subcard__title">{item.title}</span>
+                {item.date && (
+                  <span className="upcoming-subcard__meta">
+                    {formatDate(item.date, false)}
+                    {item.startTime ? ` • ${item.startTime}` : ""}
                   </span>
-                  {item.title}
-                  {item.date && (
-                    <span className="upcoming-date">
-                      {formatDate(item.date, false)}
-                      {item.startTime ? ` • ${item.startTime}` : ""}
-                    </span>
-                  )}
-                  {item.location && (
-                    <span className="upcoming-location">{item.location}</span>
-                  )}
-                </Link>
-              </li>
+                )}
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
-      </section>
+      </div>
 
-      {/* Laatste berichten: laatste community board posts */}
-      <section className="side__section">
-        <h3 className="side__title">Laatste berichten</h3>
+      {/* Card 2: Laatste Berichten */}
+      <div className="sidebar-card">
+        <h3 className="sidebar-card__title">Laatste berichten</h3>
 
         {!error && latestPosts.length === 0 && (
-          <p className="upcoming-empty">Nog geen berichten op het board.</p>
+          <p className="sidebar-card__empty">Geen berichten</p>
         )}
 
         {!error && latestPosts.length > 0 && (
-          <ul className="upcoming-list">
+          <div className="berichten-grid">
             {latestPosts.map((post) => (
-              <li key={post.id} className="upcoming-item">
-                <Link to={`/board/${post.id}`} className="upcoming-link">
-                  <span className="upcoming-post-title">
-                    {post.title || post.subject || "Bericht"}
+              <Link
+                key={post.id}
+                to={`/board/${post.id}`}
+                className="berichten-subcard"
+              >
+                <span className="berichten-subcard__title">
+                  {post.title || post.subject || "Bericht"}
+                </span>
+                {post.createdAt && (
+                  <span className="berichten-subcard__meta">
+                    {formatDate(post.createdAt, true)}
                   </span>
-                  {post.createdAt && (
-                    <span className="upcoming-post-date">
-                      {formatDate(post.createdAt, true)}
-                    </span>
-                  )}
-                </Link>
-              </li>
+                )}
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
-      </section>
+      </div>
     </>
   );
 }
