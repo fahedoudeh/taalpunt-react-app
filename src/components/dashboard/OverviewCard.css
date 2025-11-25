@@ -76,3 +76,31 @@
 .ovc a:hover {
   color: var(--color-blue);
 }
+
+
+.overview-card--blue {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-left: 4px solid var(--color-blue);
+}
+
+.overview-card--blue .ovc__title {
+  color: var(--color-blue);
+}
+
+.overview-card--orange {
+  background: linear-gradient(135deg, #FFE8E0 0%, #FFCCBC 100%);
+  border-left: 4px solid var(--color-orange);
+}
+
+.overview-card--orange .ovc__title {
+  color: var(--color-orange);
+}
+
+.overview-card--green {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-left: 4px solid #00C853;
+}
+
+.overview-card--green .ovc__title {
+  color: #00C853;
+}

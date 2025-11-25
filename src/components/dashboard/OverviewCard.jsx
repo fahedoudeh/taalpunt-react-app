@@ -1,21 +1,17 @@
-// src/components/dashboard/OverviewCard.jsx
+
 import { Link } from "react-router-dom";
 import "./OverviewCard.css";
 
-/**
- * Usage:
- * <OverviewCard title="Aankomende lessen" moreTo="/lessons">
- *   {content here}
- * </OverviewCard>
- */
+
 export default function OverviewCard({
   title,
   moreTo,
   moreLabel = "Bekijk alles",
   children,
+  className = "",
 }) {
   return (
-    <section className="ovc">
+    <section className={`ovc ${className}`}>
       <header className="ovc__head">
         <h3 className="ovc__title">{title}</h3>
         {moreTo && (

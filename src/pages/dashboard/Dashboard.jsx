@@ -398,7 +398,11 @@ export default function Dashboard() {
       {/* Cards grid */}
       <section className="dashboard-grid">
         {/* Lessons */}
-        <OverviewCard title="Aankomende lessen" moreTo="/lessons">
+        <OverviewCard
+          title="Aankomende lessen"
+          moreTo="/lessons"
+          className="overview-card--blue"
+        >
           {lessonsLoading && <Loader label="Lessen laden…" />}
           {!lessonsLoading && lessonsErr && (
             <ErrorNotice message={lessonsErr} />
@@ -425,7 +429,11 @@ export default function Dashboard() {
         </OverviewCard>
 
         {/* Activities */}
-        <OverviewCard title="Activiteiten" moreTo="/activities">
+        <OverviewCard
+          title="Aankomende activiteiten"
+          moreTo="/activities"
+          className="overview-card--orange"
+        >
           {activitiesLoading && <Loader label="Activiteiten laden…" />}
           {!activitiesLoading && activitiesErr && (
             <ErrorNotice message={activitiesErr} />
@@ -454,7 +462,11 @@ export default function Dashboard() {
         </OverviewCard>
 
         {/* Community Board posts */}
-        <OverviewCard title="Prikbord berichten" moreTo="/board">
+        <OverviewCard
+          title="Prikbord berichten"
+          moreTo="/board"
+          className="overview-card--green"
+        >
           {postsLoading && <Loader label="Berichten laden…" />}
           {!postsLoading && postsErr && <ErrorNotice message={postsErr} />}
           {!postsLoading && !postsErr && communityPosts.length === 0 && (
@@ -480,7 +492,11 @@ export default function Dashboard() {
 
         {/* Teacher Board preview – only for teachers/admin */}
         {isTeacher && (
-          <OverviewCard title="Docentenkamer" moreTo="/teachers-board">
+          <OverviewCard
+            title="Docentenkamer"
+            moreTo="/teachers-board"
+            className="overview-card--green"
+          >
             {postsLoading && <Loader label="Berichten laden…" />}
             {!postsLoading && postsErr && <ErrorNotice message={postsErr} />}
             {!postsLoading && !postsErr && teacherPosts.length === 0 && (

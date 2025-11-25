@@ -9,7 +9,7 @@ export default function Sidebar() {
 
   const email = user?.email ?? null;
   const roles = Array.isArray(user?.roles) ? user.roles : [];
-  const displayName = user?.username || email || "Taalpunt gebruiker";
+  const displayName = user?.username || "Taalpunt gebruiker";
 
   const hasAdminRole = roles.includes("admin");
   const hasTeacherRole = roles.includes("teacher") || roles.includes("docent");

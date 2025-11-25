@@ -6,49 +6,24 @@ import {
   updateLesson,
   deleteLesson,
 } from "../../services/lessonService";
-import { getHomework } from "../../services/homeworkService";
+import { getHomework, getSubmissions } from "../../services/homeworkService";
 import { getEnrollments } from "../../services/enrollmentService";
-import { getActivities, createActivity } from "../../services/activityService";
+import {
+  getActivities,
+  createActivity,
+  updateActivity,
+  deleteActivity,
+} from "../../services/activityService";
 import { sortByNewest } from "../../helpers/utils";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import Button from "../../components/ui/button/Button";
+import HomeworkGradingModal from "../../components/homework/HomeworkGradingModal";
+import { updateSubmission } from "../../services/homeworkService";
+import { Edit2, Trash2 } from "lucide-react";
 import "./TeachersRoom.css";
 
-// Kleine helper om lijsten “nieuwste eerst” te sorteren
 
-
-// Kleine iconen voor actiekolom
-function EditIcon(props) {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M4 13.5 12.5 5l2.5 2.5L6.5 16H4v-2.5Z" fill="currentColor" />
-    </svg>
-  );
-}
-
-function TrashIcon(props) {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      {...props}
-    >
-      <path
-        d="M7 4h6l-.5-1.5A1 1 0 0 0 11.6 2H8.4a1 1 0 0 0-.9.5L7 4Zm-3 1h12v1.5H4V5Zm2 2h8v7.5A1.5 1.5 0 0 1 12.5 16h-5A1.5 1.5 0 0 1 6 14.5V7Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 export default function TeachersRoom() {
   const { user } = useAuth();
@@ -62,6 +37,7 @@ export default function TeachersRoom() {
   const [lessons, setLessons] = useState([]);
   const [showLessonForm, setShowLessonForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
+  const [lessonFormError, setLessonFormError] = useState("");
 
   // Cursisten (inschrijvingen)
   const [enrollments, setEnrollments] = useState([]);
@@ -69,9 +45,13 @@ export default function TeachersRoom() {
   // Huiswerk
   const [homeworkSubmissions, setHomeworkSubmissions] = useState([]);
 
+  // Grading
+  const [gradingSubmission, setGradingSubmission] = useState(null);
+
   // Activiteiten
   const [activities, setActivities] = useState([]);
   const [showActivityForm, setShowActivityForm] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
 
   // Overzicht-statistieken
   const [stats, setStats] = useState({
@@ -160,16 +140,51 @@ export default function TeachersRoom() {
   };
 
   const fetchHomeworkData = async () => {
-    const { data } = await getHomework();
-    setHomeworkSubmissions(Array.isArray(data) ? data : []);
-  };
+    try {
+      const [homeworkRes, submissionsRes] = await Promise.allSettled([
+        getHomework(),
+        getSubmissions(),
+      ]);
 
+      const homework =
+        homeworkRes.status === "fulfilled" ? homeworkRes.value.data : [];
+      const submissions =
+        submissionsRes.status === "fulfilled" ? submissionsRes.value.data : [];
+
+      // Merge submissions with homework and student data
+      const enrichedSubmissions = submissions.map((submission) => {
+        const hw = homework.find((h) => h.id === submission.homeworkId);
+        return {
+          ...submission,
+          lessonTitle: hw?.title || "Onbekend huiswerk",
+          studentName: submission.studentName || "Onbekende cursist",
+          submittedAt:
+            submission.submittedAt ||
+            submission.createdAt ||
+            new Date().toISOString(),
+        };
+      });
+
+      setHomeworkSubmissions(
+        Array.isArray(enrichedSubmissions) ? enrichedSubmissions : []
+      );
+    } catch (error) {
+      console.error("Fetch homework error:", error);
+      setHomeworkSubmissions([]);
+    }
+  };
   const fetchActivitiesData = async () => {
     const { data } = await getActivities();
     setActivities(sortByNewest(Array.isArray(data) ? data : [], "date"));
   };
 
   const handleCreateLesson = async (lessonData) => {
+    // Validate description length
+    if (lessonData.description.length < 10) {
+      setError("Beschrijving moet minimaal 10 tekens bevatten.");
+      return;
+    }
+
     try {
       const payload = {
         title: lessonData.title,
@@ -187,20 +202,25 @@ export default function TeachersRoom() {
       setLessons((prev) => sortByNewest([data, ...prev], "date"));
       setShowLessonForm(false);
       setEditingLesson(null);
+      setLessonFormError("");
       setError("");
     } catch (err) {
       console.error("Create lesson error:", err);
-      if (err.response) {
-        console.error("Error response data:", err.response.data);
+      if (err.response?.data) {
+        const errorMsg = Array.isArray(err.response.data)
+          ? err.response.data.join(", ")
+          : err.response.data.message || "Kon les niet aanmaken.";
+        setError(errorMsg);
+      } else {
+        setError("Kon les niet aanmaken.");
       }
-      setError("Kon les niet aanmaken.");
     }
   };
 
   const handleUpdateLesson = async (lessonId, lessonData) => {
     try {
       const payload = {
-        id: lessonId, 
+        id: lessonId,
         title: lessonData.title,
         description: lessonData.description,
         date: lessonData.date,
@@ -250,6 +270,35 @@ export default function TeachersRoom() {
     }
   };
 
+  const handleSaveHomeworkFeedback = async (submissionId, feedback) => {
+    try {
+      await updateSubmission(submissionId, {
+        feedback: feedback,
+        reviewed: true,
+        reviewedAt: new Date().toISOString(),
+      });
+
+      // Update local state
+      setHomeworkSubmissions((prev) =>
+        prev.map((sub) =>
+          sub.id === submissionId
+            ? {
+                ...sub,
+                feedback,
+                reviewed: true,
+                reviewedAt: new Date().toISOString(),
+              }
+            : sub
+        )
+      );
+
+      setError("");
+    } catch (err) {
+      console.error("Save feedback error:", err);
+      throw err;
+    }
+  };
+
   const handleCreateActivity = async (activityData) => {
     try {
       const payload = {
@@ -273,6 +322,51 @@ export default function TeachersRoom() {
         console.error("Error response data:", err.response.data);
       }
       setError("Kon activiteit niet aanmaken.");
+    }
+  };
+
+  const handleUpdateActivity = async (activityId, activityData) => {
+    try {
+      const payload = {
+        title: activityData.title,
+        description: activityData.description,
+        date: activityData.date,
+        startTime: activityData.startTime,
+        endTime: activityData.endTime,
+        location: activityData.location,
+        type: activityData.type || "Gemeenschapsevenement",
+        creatorId: Number(user.id),
+      };
+
+      await updateActivity(activityId, payload);
+      setActivities((prev) =>
+        sortByNewest(
+          prev.map((a) => (a.id === activityId ? { ...a, ...payload } : a)),
+          "date"
+        )
+      );
+      setEditingActivity(null);
+      setShowActivityForm(false);
+      setError("");
+    } catch (err) {
+      console.error("Update activity error:", err);
+      setError("Kon activiteit niet bijwerken.");
+    }
+  };
+
+  const handleDeleteActivity = async (activityId) => {
+    if (
+      !window.confirm("Weet je zeker dat je deze activiteit wilt verwijderen?")
+    ) {
+      return;
+    }
+
+    try {
+      await deleteActivity(activityId);
+      setActivities((prev) => prev.filter((a) => a.id !== activityId));
+    } catch (err) {
+      setError("Kon activiteit niet verwijderen.");
+      console.error("Delete activity error:", err);
     }
   };
 
@@ -360,10 +454,31 @@ export default function TeachersRoom() {
             />
             <textarea
               name="description"
-              placeholder="Beschrijving"
+              placeholder="Beschrijving (minimaal 10 tekens)"
               defaultValue={editingLesson?.description}
               required
+              minLength={10}
+              onChange={(e) => {
+                if (e.target.value.length < 10) {
+                  setLessonFormError(
+                    "Beschrijving moet minimaal 10 tekens bevatten."
+                  );
+                } else {
+                  setLessonFormError("");
+                }
+              }}
             />
+            {lessonFormError && (
+              <p
+                style={{
+                  color: "var(--color-danger)",
+                  fontSize: "0.85rem",
+                  margin: "0.25rem 0 0 0",
+                }}
+              >
+                {lessonFormError}
+              </p>
+            )}
             <input
               name="date"
               type="date"
@@ -469,7 +584,7 @@ export default function TeachersRoom() {
                         setShowLessonForm(true);
                       }}
                     >
-                      <EditIcon />
+                      <Edit2 size={16} />
                     </Button>
                     <Button
                       size="sm"
@@ -478,7 +593,7 @@ export default function TeachersRoom() {
                       title="Les verwijderen"
                       onClick={() => handleDeleteLesson(lesson.id)}
                     >
-                      <TrashIcon />
+                      <Trash2 size={16} />
                     </Button>
                   </td>
                 </tr>
@@ -556,7 +671,14 @@ export default function TeachersRoom() {
                 Ingeleverd:{" "}
                 {new Date(submission.submittedAt).toLocaleString("nl-NL")}
               </p>
-              {!submission.reviewed && <Button size="sm">Beoordelen</Button>}
+              {!submission.reviewed && (
+                <Button
+                  size="sm"
+                  onClick={() => setGradingSubmission(submission)}
+                >
+                  Beoordelen
+                </Button>
+              )}
             </div>
           ))}
         </div>
@@ -575,7 +697,11 @@ export default function TeachersRoom() {
 
       {showActivityForm && (
         <div className="activity-form">
-          <h3>Nieuwe activiteit aanmaken</h3>
+          <h3>
+            {editingActivity
+              ? "Activiteit bewerken"
+              : "Nieuwe activiteit aanmaken"}
+          </h3>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -590,40 +716,57 @@ export default function TeachersRoom() {
                 type: formData.get("type") || "Gemeenschapsevenement",
               };
 
-              handleCreateActivity(activityData);
+              if (editingActivity) {
+                handleUpdateActivity(editingActivity.id, activityData);
+              } else {
+                handleCreateActivity(activityData);
+              }
             }}
           >
             <input
               name="title"
               placeholder="Titel van de activiteit"
+              defaultValue={editingActivity?.title}
               required
             />
             <textarea
               name="description"
               placeholder="Korte beschrijving"
+              defaultValue={editingActivity?.description}
               required
             />
-            <input name="date" type="date" required />
-            <div className="form-row">
-              <input
-                name="startTime"
-                type="time"
-                placeholder="Starttijd"
-                required
-              />
-              <input
-                name="endTime"
-                type="time"
-                placeholder="Eindtijd"
-                required
-              />
-            </div>
+            <input
+              name="date"
+              type="date"
+              defaultValue={
+                editingActivity?.date ? editingActivity.date.split("T")[0] : ""
+              }
+              required
+            />
+            <input
+              name="startTime"
+              type="time"
+              placeholder="Starttijd"
+              defaultValue={editingActivity?.startTime || "10:00"}
+              required
+            />
+            <input
+              name="endTime"
+              type="time"
+              placeholder="Eindtijd"
+              defaultValue={editingActivity?.endTime || "12:00"}
+              required
+            />
             <input
               name="location"
               placeholder="Locatie (bijv. Dorpshuis Kapelle)"
+              defaultValue={editingActivity?.location}
               required
             />
-            <select name="type" defaultValue="Gemeenschapsevenement">
+            <select
+              name="type"
+              defaultValue={editingActivity?.type || "Gemeenschapsevenement"}
+            >
               <option value="Gemeenschapsevenement">
                 Gemeenschapsevenement
               </option>
@@ -633,11 +776,18 @@ export default function TeachersRoom() {
             </select>
 
             <div className="form-actions">
-              <Button type="submit">Activiteit aanmaken</Button>
+              <Button type="submit">
+                {editingActivity
+                  ? "Activiteit bijwerken"
+                  : "Activiteit aanmaken"}
+              </Button>
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setShowActivityForm(false)}
+                onClick={() => {
+                  setShowActivityForm(false);
+                  setEditingActivity(null);
+                }}
               >
                 Annuleren
               </Button>
@@ -658,6 +808,7 @@ export default function TeachersRoom() {
                 <th>Tijd</th>
                 <th>Locatie</th>
                 <th>Type</th>
+                <th>Acties</th>
               </tr>
             </thead>
             <tbody>
@@ -680,6 +831,29 @@ export default function TeachersRoom() {
                   </td>
                   <td>{activity.location}</td>
                   <td>{activity.type}</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="icon-btn"
+                      title="Activiteit bewerken"
+                      onClick={() => {
+                        setEditingActivity(activity);
+                        setShowActivityForm(true);
+                      }}
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      className="icon-btn"
+                      title="Activiteit verwijderen"
+                      onClick={() => handleDeleteActivity(activity.id)}
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -693,7 +867,7 @@ export default function TeachersRoom() {
     <div className="teachers-room">
       <div className="teachers-room__header">
         <h1>Docentenkamer</h1>
-        <p>Welkom terug, {user?.email}</p>
+        <p>Welkom terug, {user?.username || user?.email}</p>
       </div>
 
       <div className="teachers-room__tabs">
@@ -743,6 +917,13 @@ export default function TeachersRoom() {
           </>
         )}
       </div>
+      {gradingSubmission && (
+        <HomeworkGradingModal
+          submission={gradingSubmission}
+          onClose={() => setGradingSubmission(null)}
+          onSave={handleSaveHomeworkFeedback}
+        />
+      )}
     </div>
   );
 }
