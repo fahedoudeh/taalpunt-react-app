@@ -1,7 +1,5 @@
-// src/components/layout/sidebar/Sidebar.jsx
 import "./Sidebar.css";
 import { useAuth } from "../../../contexts/AuthContext";
-import { Link } from "react-router-dom";
 import UpcomingSidebar from "./UpcomingSidebar";
 
 export default function Sidebar() {
@@ -24,8 +22,8 @@ export default function Sidebar() {
       {/* Binnenkort + Laatste Berichten */}
       <UpcomingSidebar />
 
-      {/* Profile Card */}
-      <div className="sidebar-card">
+      {/* Profile Card - BLUE BORDER */}
+      <div className="sidebar-card sidebar-card--profile">
         <h3 className="sidebar-card__title">Profiel</h3>
 
         <div className="profile-info">

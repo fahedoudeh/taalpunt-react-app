@@ -5,7 +5,7 @@ import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import { formatDate } from "../../helpers/formatDate";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, UserCheck } from "lucide-react";
 import "./Lessons.css";
 
 export default function Lessons() {

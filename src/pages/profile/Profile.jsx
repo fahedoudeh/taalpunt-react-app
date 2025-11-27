@@ -1,4 +1,3 @@
-// src/pages/profile/Profile.jsx
 import { useAuth } from "../../contexts/AuthContext";
 import "./Profile.css";
 

@@ -237,6 +237,7 @@
   color: #dc2626;
 }
 
+
 @media (max-width: 640px) {
   .attendance-stats {
     grid-template-columns: 1fr;

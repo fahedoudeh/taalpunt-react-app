@@ -59,5 +59,5 @@ export const createSubmission = async (payload) => {
 
 // Update submission (NEW - for future re-submission feature)
 export const updateSubmission = async (id, payload) => {
-  return api.put(`/submissions/${id}`, payload);
+  return api.patch(`/submissions/${id}`, payload);
 };

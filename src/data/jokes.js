@@ -107,7 +107,7 @@ export const JOKES = [
     punchline: "Nat. Heel nat. 🌧️😂",
   },
   {
-    setup: "Waarom eten Nederlanders stampot?",
+    setup: "Waarom eten Nederlanders stamppot?",
     punchline: "Omdat de zon weer eens niet meewerkt. 🥔🌫️",
   },
   {

@@ -1,4 +1,3 @@
-// src/components/ui/loader/Loader.jsx
 import "./Loader.css";
 
 export default function Loader({ label = "Laden…" }) {

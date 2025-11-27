@@ -44,7 +44,10 @@ export default function HomeworkGradingModal({ submission, onClose, onSave }) {
         <div className="homework-grading__submission">
           <h4>Ingeleverd werk:</h4>
           <div className="homework-grading__content">
-            {submission.content || "Geen inhoud beschikbaar"}
+            {submission.content ||
+              submission.submissionText ||
+              submission.text ||
+              "Geen inhoud beschikbaar"}
           </div>
         </div>
 

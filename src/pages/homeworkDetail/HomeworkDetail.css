@@ -1,0 +1,58 @@
+.homework-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.homework-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.homework-detail__header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--color-blue);
+}
+
+.homework-detail__due-date {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.homework-detail__content {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.homework-detail__content h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--color-black);
+}
+
+.homework-detail__content p {
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.homework-detail__materials a {
+  color: var(--color-blue);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.homework-detail__materials a:hover {
+  text-decoration: underline;
+}
+
+.homework-detail__actions {
+  display: flex;
+  gap: 1rem;
+}

@@ -1,4 +1,3 @@
-// src/pages/board/Board.jsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -16,6 +15,7 @@ import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import EmptyState from "../../components/ui/empty/EmptyState";
 import Button from "../../components/ui/button/Button";
 import Modal from "../../components/ui/modal/Modal";
+
 import { sortByNewest } from "../../helpers/utils";
 import "./Board.css";
 

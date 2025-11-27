@@ -1,4 +1,3 @@
-// src/components/layout/sidebar/WordOfTheDay.jsx
 import { useState, useMemo } from "react";
 import { WORDS } from "../../../data/words";
 import { todayPick } from "../../../helpers/dailyPick";
@@ -10,7 +9,7 @@ export default function WordOfTheDay() {
   if (!pick) return null;
 
   return (
-    <div className="right__card">
+    <div className="right__card right__card--word">
       <h4 className="right__title">Woord van de dag</h4>
 
       <div className="daily-term">{pick.term}</div>

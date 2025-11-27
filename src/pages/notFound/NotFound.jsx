@@ -1,4 +1,3 @@
-// src/pages/notFound/NotFound.jsx
 import { useNavigate, Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 import "./NotFound.css";

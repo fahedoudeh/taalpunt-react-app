@@ -18,10 +18,6 @@ import { useAuth } from "../../contexts/AuthContext";
 
 import "./Dashboard.css";
 
-
-
-
-
 // Simple mapping for Open-Meteo weather codes
 function describeWeather(code) {
   if (code === undefined || code === null) return "onbekend weer";
@@ -305,7 +301,7 @@ export default function Dashboard() {
   const lessonsCount = lessons.length;
   const activitiesCount = activities.length;
 
-  // Today in Dutch: "donderdag 20 november 2025"
+  // Today in Dutch
   const today = new Date();
   const formattedDate = new Intl.DateTimeFormat("nl-NL", {
     weekday: "long",
@@ -322,7 +318,7 @@ export default function Dashboard() {
       <section className="dashboard-hero">
         <div className="dashboard-hero-left">
           <p className="dashboard-hero-label">
-            {isTeacher ? "Welkom terug, docent" : "Welkom terug"}
+            {isTeacher ? "Welkom terug" : "Welkom terug"}
           </p>
 
           <h1 className="dashboard-hero-title">
@@ -415,12 +411,24 @@ export default function Dashboard() {
             />
           )}
           {!lessonsLoading && !lessonsErr && lessons.length > 0 && (
-            <ul aria-label="Lessenlijst">
+            <ul className="dashboard-card-list" aria-label="Lessenlijst">
               {lessons.map((lesson) => (
-                <li key={lesson.id}>
-                  <Link to={`/lessons/${lesson.id}`}>
-                    {orText(lesson.title, "Les")}
-                    {lesson.date ? ` — ${formatDate(lesson.date, false)}` : ""}
+                <li
+                  key={lesson.id}
+                  className="dashboard-card-item dashboard-card-item--blue"
+                >
+                  <Link
+                    to={`/lessons/${lesson.id}`}
+                    className="dashboard-card-link"
+                  >
+                    <span className="dashboard-card-title">
+                      {orText(lesson.title, "Les")}
+                    </span>
+                    {lesson.date && (
+                      <span className="dashboard-card-meta">
+                        {formatDate(lesson.date, false)}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
@@ -446,14 +454,24 @@ export default function Dashboard() {
             />
           )}
           {!activitiesLoading && !activitiesErr && activities.length > 0 && (
-            <ul aria-label="Activiteitenlijst">
+            <ul className="dashboard-card-list" aria-label="Activiteitenlijst">
               {activities.map((activity) => (
-                <li key={activity.id}>
-                  <Link to={`/activities/${activity.id}`}>
-                    {orText(activity.title, "Activiteit")}
-                    {activity.date
-                      ? ` — ${formatDate(activity.date, false)}`
-                      : ""}
+                <li
+                  key={activity.id}
+                  className="dashboard-card-item dashboard-card-item--orange"
+                >
+                  <Link
+                    to={`/activities/${activity.id}`}
+                    className="dashboard-card-link"
+                  >
+                    <span className="dashboard-card-title">
+                      {orText(activity.title, "Activiteit")}
+                    </span>
+                    {activity.date && (
+                      <span className="dashboard-card-meta">
+                        {formatDate(activity.date, false)}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
@@ -477,12 +495,24 @@ export default function Dashboard() {
             />
           )}
           {!postsLoading && !postsErr && communityPosts.length > 0 && (
-            <ul aria-label="Berichtenlijst">
+            <ul className="dashboard-card-list" aria-label="Berichtenlijst">
               {take(communityPosts, 5).map((post) => (
-                <li key={post.id}>
-                  <Link to={`/board/${post.id}`}>
-                    {orText(post.title ?? post.subject, "Bericht")}
-                    {post.date ? ` — ${formatDate(post.date, false)}` : ""}
+                <li
+                  key={post.id}
+                  className="dashboard-card-item dashboard-card-item--green"
+                >
+                  <Link
+                    to={`/board/${post.id}`}
+                    className="dashboard-card-link"
+                  >
+                    <span className="dashboard-card-title">
+                      {orText(post.title ?? post.subject, "Bericht")}
+                    </span>
+                    {post.date && (
+                      <span className="dashboard-card-meta">
+                        {formatDate(post.date, false)}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
@@ -493,7 +523,7 @@ export default function Dashboard() {
         {/* Teacher Board preview – only for teachers/admin */}
         {isTeacher && (
           <OverviewCard
-            title="Docentenkamer"
+            title="Docentenbord"
             moreTo="/teachers-board"
             className="overview-card--green"
           >
@@ -507,12 +537,24 @@ export default function Dashboard() {
               />
             )}
             {!postsLoading && !postsErr && teacherPosts.length > 0 && (
-              <ul aria-label="Docentenberichtenlijst">
+              <ul
+                className="dashboard-card-list"
+                aria-label="Docentenberichtenlijst"
+              >
                 {take(teacherPosts, 5).map((post) => (
-                  <li key={post.id}>
-                    <Link to="/teachers-board">
-                      {orText(post.title ?? post.subject, "Bericht")}
-                      {post.date ? ` — ${formatDate(post.date, false)}` : ""}
+                  <li
+                    key={post.id}
+                    className="dashboard-card-item dashboard-card-item--green"
+                  >
+                    <Link to="/teachers-board" className="dashboard-card-link">
+                      <span className="dashboard-card-title">
+                        {orText(post.title ?? post.subject, "Bericht")}
+                      </span>
+                      {post.date && (
+                        <span className="dashboard-card-meta">
+                          {formatDate(post.date, false)}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}

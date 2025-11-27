@@ -227,7 +227,7 @@ export default function TeachersBoard() {
       <div className="teacher-board__inner">
         <div className="teacher-board__header">
           <div>
-            <h1 className="teacher-board__title">Docentenkamer</h1>
+            <h1 className="teacher-board__title">Docentenbord</h1>
             <p className="teacher-board__subtitle">
               Alleen zichtbaar voor docenten – interne aankondigingen, planning
               en notities.

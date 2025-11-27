@@ -1,8 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import Button from "../../components/ui/button/Button";
-import "./Register.css"
+import "./Register.css";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -67,7 +66,7 @@ export default function Register() {
               <span className="auth-branding__punt">punt</span>
             </h1>
             <p className="auth-branding__slogan">
-              Koffie, thee en taal – een goed verhaal
+              Koffie, thee, taal én een goed verhaal
             </p>
             <p className="auth-branding__subtitle">
               Maak een account aan als cursist of docent en sluit je aan bij
@@ -154,15 +153,13 @@ export default function Register() {
           {err && <p className="auth-message auth-message--error">{err}</p>}
           {msg && <p className="auth-message auth-message--success">{msg}</p>}
 
-          <Button
+          <button
             type="submit"
-            variant="accent"
-            size="lg"
-            fullWidth
+            className="auth-button"
             disabled={loading}
           >
             {loading ? "Bezig…" : "Account aanmaken"}
-          </Button>
+          </button>
         </form>
 
         <p className="auth-footer-text">

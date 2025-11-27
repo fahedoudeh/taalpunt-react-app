@@ -1,4 +1,6 @@
-
+/* =========================================
+   LAYOUT - TRANSPARENT TO SHOW BODY GRADIENT
+   ========================================= */
 
 .layout {
   display: grid;
@@ -6,12 +8,12 @@
   gap: 1.5rem;
   max-width: 1800px;
   margin: 0 auto;
-  background-color: var(--color-background);
   padding: 0;
   box-sizing: border-box;
   align-items: flex-start;
   height: calc(100vh - var(--navbar-height));
   overflow: hidden;
+  background: transparent !important; 
 }
 
 .layout__left,
@@ -22,52 +24,35 @@
   position: sticky;
   top: var(--navbar-height);
   padding: 1.5rem 1rem;
-}
-
-.layout__left {
-  background: var(--color-white);
-  border-right: 1px solid var(--color-border);
-}
-
-.layout__right {
-  background: var(--color-white);
-  border-left: 1px solid var(--color-border);
+  background: transparent !important;
+  border: none !important;
 }
 
 .layout__main {
   padding: 1.5rem;
   overflow-y: auto;
   height: calc(100vh - var(--navbar-height));
+  background: transparent !important;
 }
 
-/* Custom scrollbar for sidebars */
+/* Hide scrollbars */
 .layout__left::-webkit-scrollbar,
 .layout__right::-webkit-scrollbar,
 .layout__main::-webkit-scrollbar {
-  width: 0px;
-  display: none;
+  width: 0 !important;
+  display: none !important;
 }
 
-.layout__left::-webkit-scrollbar-track,
-.layout__right::-webkit-scrollbar-track,
-.layout__main::-webkit-scrollbar-track {
-  background: var(--color-background);
+.layout__left,
+.layout__right,
+.layout__main {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-.layout__left::-webkit-scrollbar-thumb,
-.layout__right::-webkit-scrollbar-thumb,
-.layout__main::-webkit-scrollbar-thumb {
-  background: var(--color-light-gray);
-  border-radius: var(--radius-full);
-}
-
-.layout__left::-webkit-scrollbar-thumb:hover,
-.layout__right::-webkit-scrollbar-thumb:hover,
-.layout__main::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray);
-}
-
-/* Responsive */
+/* =========================================
+   RESPONSIVE - TABLET
+   ========================================= */
 
 @media (max-width: 1200px) {
   .layout {
@@ -76,25 +61,42 @@
   }
 }
 
+/* =========================================
+   RESPONSIVE - MOBILE
+   ========================================= */
+
 @media (max-width: 900px) {
   .layout {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
     height: auto;
     overflow: visible;
-  }
-
-  .layout__left,
-  .layout__right {
-    position: static;
-    height: auto;
-    border: none;
-    border-bottom: 1px solid var(--color-border);
-    overflow: visible;
+    padding-bottom: calc(var(--navbar-height) + 1rem);
   }
 
   .layout__main {
+    order: 1;
     height: auto;
     overflow: visible;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .layout__right {
+    order: 2;
+    position: static;
+    height: auto;
+    overflow: visible;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .layout__left {
+    order: 3;
+    position: static;
+    height: auto;
+    overflow: visible;
+    width: 100%;
+    padding: 1rem;
   }
 }

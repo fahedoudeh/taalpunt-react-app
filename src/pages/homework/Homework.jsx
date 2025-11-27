@@ -1,12 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { getHomework } from "../../services/homeworkService";
-import { getSubmissions } from "../../services/homeworkService";
+import { getHomework, getSubmissions } from "../../services/homeworkService";
 import Loader from "../../components/ui/loader/Loader";
 import ErrorNotice from "../../components/ui/error/ErrorNotice";
 import { Link } from "react-router-dom";
-import { Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Clock, CheckCircle, AlertCircle, MessageCircle } from "lucide-react";
 import "./Homework.css";
 
 export default function Homework() {
@@ -20,53 +18,133 @@ export default function Homework() {
     user?.roles?.includes("teacher") || user?.roles?.includes("admin");
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    let isMounted = true;
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [homeworkRes, submissionsRes] = await Promise.all([
-        getHomework(),
-        getSubmissions(),
-      ]);
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
 
-      setHomework(homeworkRes?.data || []);
-      setSubmissions(submissionsRes?.data || []);
-    } catch (e) {
-      setError("Kon huiswerk niet laden.");
-      console.error(e);
-    } finally {
-      setLoading(false);
+        const [hwRes, subsRes] = await Promise.all([
+          getHomework(),
+          getSubmissions(),
+        ]);
+
+        if (!isMounted) return;
+
+        setHomework(hwRes?.data || []);
+        setSubmissions(subsRes?.data || []);
+      } catch (err) {
+        console.error("Error loading homework overview:", err);
+        if (isMounted) {
+          setError("Kon het huiswerkoverzicht niet laden.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     }
-  };
 
-  if (loading) return <Loader label="Huiswerk laden..." />;
-  if (error) return <ErrorNotice message={error} />;
+    loadData();
 
-  const getSubmissionStatus = (homeworkId) => {
-    const submission = submissions.find(
-      (sub) =>
-        Number(sub.homeworkId) === Number(homeworkId) &&
-        Number(sub.studentId) === Number(user?.id)
-    );
-    return submission ? "submitted" : "pending";
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const isOverdue = (dueDate) => {
     return new Date(dueDate) < new Date();
   };
+
+  // ---------- Student status helpers ----------
+
+  const getStatusForStudent = (hw) => {
+    if (!user) {
+      return {
+        label: "Log in om je status te zien",
+        variant: "neutral",
+      };
+    }
+
+    const mySubmission = submissions.find(
+      (sub) =>
+        Number(sub.homeworkId) === Number(hw.id) &&
+        Number(sub.studentId) === Number(user.id)
+    );
+
+    if (!mySubmission) {
+      if (isOverdue(hw.dueDate)) {
+        return {
+          label: "Niet ingeleverd (te laat)",
+          variant: "overdue",
+        };
+      }
+
+      return {
+        label: "Nog niet ingeleverd",
+        variant: "pending",
+      };
+    }
+
+    if (mySubmission.reviewed) {
+      if (mySubmission.feedback && mySubmission.feedback.trim().length > 0) {
+        return {
+          label: "Beoordeeld – feedback beschikbaar",
+          variant: "reviewed-with-feedback",
+          submission: mySubmission,
+        };
+      }
+
+      return {
+        label: "Beoordeeld",
+        variant: "reviewed",
+        submission: mySubmission,
+      };
+    }
+
+    return {
+      label: "Ingeleverd – wachten op beoordeling",
+      variant: "submitted",
+      submission: mySubmission,
+    };
+  };
+
+  // ---------- Teacher summary helpers ----------
+
+  const getTeacherSummary = (hw) => {
+    const related = submissions.filter(
+      (sub) => Number(sub.homeworkId) === Number(hw.id)
+    );
+    const total = related.length;
+    const reviewed = related.filter((s) => s.reviewed).length;
+    const withFeedback = related.filter(
+      (s) => s.reviewed && s.feedback && s.feedback.trim().length > 0
+    ).length;
+
+    return { total, reviewed, withFeedback };
+  };
+
+  // ---------- Render ----------
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <ErrorNotice message={error} />;
+  }
 
   return (
     <div className="homework-page">
       <div className="homework-page__inner">
         <header className="homework-page__header">
           <div>
-            <h1 className="homework-page__title">Huiswerk Overzicht</h1>
+            <h1 className="homework-page__title">Huiswerk overzicht</h1>
             <p className="homework-page__subtitle">
               {isTeacher
-                ? "Bekijk en beheer alle huiswerkopdrachten"
-                : "Al je huiswerkopdrachten op één plek"}
+                ? "Bekijk en beheer alle huiswerkopdrachten."
+                : "Al je huiswerkopdrachten, inclusief status en feedback, op één plek."}
             </p>
           </div>
         </header>
@@ -78,37 +156,77 @@ export default function Homework() {
         ) : (
           <div className="homework-page__grid">
             {homework.map((hw) => {
-              const status = isTeacher ? null : getSubmissionStatus(hw.id);
               const overdue = isOverdue(hw.dueDate);
+              const status = isTeacher ? null : getStatusForStudent(hw);
+              const summary = isTeacher ? getTeacherSummary(hw) : null;
 
               return (
                 <Link
                   key={hw.id}
-                  to={`/lessons/${hw.lessonId}`}
+                  to={`/homework/${hw.lessonId}`}
                   className="homework-card"
                 >
                   <div className="homework-card__header">
-                    <h3 className="homework-card__title">{hw.title}</h3>
-                    {!isTeacher && (
-                      <div
-                        className={`homework-card__status homework-card__status--${status}`}
+                    <h2 className="homework-card__title">{hw.title}</h2>
+
+                    {/* Student status pill */}
+                    {!isTeacher && status && (
+                      <span
+                        className={`homework-card__status homework-card__status--${status.variant}`}
                       >
-                        {status === "submitted" ? (
-                          <>
-                            <CheckCircle size={16} /> Ingeleverd
-                          </>
+                        {status.variant === "overdue" && (
+                          <AlertCircle
+                            size={16}
+                            className="homework-card__status-icon"
+                          />
+                        )}
+                        {status.variant === "submitted" && (
+                          <Clock
+                            size={16}
+                            className="homework-card__status-icon"
+                          />
+                        )}
+                        {(status.variant === "reviewed" ||
+                          status.variant === "reviewed-with-feedback") && (
+                          <CheckCircle
+                            size={16}
+                            className="homework-card__status-icon"
+                          />
+                        )}
+                        {status.variant === "reviewed-with-feedback" && (
+                          <MessageCircle
+                            size={16}
+                            className="homework-card__status-icon"
+                          />
+                        )}
+                        {status.label}
+                      </span>
+                    )}
+
+                    {/* Teacher summary pill */}
+                    {isTeacher && summary && (
+                      <span className="homework-card__status homework-card__status--teacher">
+                        {summary.total === 0 ? (
+                          "Nog geen inzendingen"
                         ) : (
                           <>
-                            <Clock size={16} /> Te doen
+                            <CheckCircle
+                              size={14}
+                              className="homework-card__status-icon"
+                            />
+                            {summary.reviewed}/{summary.total} beoordeeld
+                            {summary.withFeedback > 0 &&
+                              ` · ${summary.withFeedback} met feedback`}
                           </>
                         )}
-                      </div>
+                      </span>
                     )}
                   </div>
 
                   <p className="homework-card__description">
-                    {hw.description.slice(0, 120)}
-                    {hw.description.length > 120 ? "..." : ""}
+                    {hw.description.length > 120
+                      ? `${hw.description.slice(0, 120)}…`
+                      : hw.description}
                   </p>
 
                   <div className="homework-card__footer">
@@ -117,15 +235,28 @@ export default function Homework() {
                         overdue ? "homework-card__due--overdue" : ""
                       }`}
                     >
-                      {overdue && <AlertCircle size={14} />}
+                      <Clock size={16} className="homework-card__due-icon" />
                       <span>
-                        {overdue ? "Verlopen: " : "Inleveren voor: "}
+                        Inleveren voor{" "}
                         {new Date(hw.dueDate).toLocaleDateString("nl-NL", {
                           day: "numeric",
                           month: "long",
                         })}
                       </span>
                     </div>
+
+                    {/* Small hint for students when feedback exists */}
+                    {!isTeacher &&
+                      status?.submission?.feedback &&
+                      status.variant === "reviewed-with-feedback" && (
+                        <div className="homework-card__feedback-pill">
+                          <MessageCircle
+                            size={14}
+                            className="homework-card__feedback-icon"
+                          />
+                          Feedback beschikbaar
+                        </div>
+                      )}
                   </div>
                 </Link>
               );

@@ -2,7 +2,7 @@
 
 .homework-page {
   padding: 2rem 1.5rem;
-  background-color: var(--color-background);
+  background: transparent;
   min-height: calc(100vh - var(--navbar-height));
 }
 
@@ -143,4 +143,50 @@
   .homework-card {
     padding: 1.25rem;
   }
+}
+/* Status variants */
+.homework-card__status--pending {
+  background-color: #fff7e6;
+  color: #8a5b00;
+}
+
+.homework-card__status--submitted {
+  background-color: #e6f4ff;
+  color: #005493;
+}
+
+.homework-card__status--overdue {
+  background-color: #ffe6e6;
+  color: #a10000;
+}
+
+.homework-card__status--reviewed {
+  background-color: #e6ffe9;
+  color: #146c2e;
+}
+
+.homework-card__status--reviewed-with-feedback {
+  background-color: #e6f7ff;
+  color: #00507a;
+}
+
+.homework-card__status--teacher {
+  background-color: #f1f3ff;
+  color: #282f6b;
+}
+
+/* Feedback pill in the footer */
+.homework-card__feedback-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background-color: #e6f7ff;
+  color: #00507a;
+}
+
+.homework-card__feedback-icon {
+  display: inline-block;
 }

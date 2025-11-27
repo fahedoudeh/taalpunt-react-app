@@ -1,15 +1,25 @@
-/* ===== Page wrapper – center content, gradient background ===== */
+/* =========================================
+   LOGIN PAGE - GRADIENT BACKGROUND
+   ========================================= */
 
 .auth-page {
-  min-height: calc(100vh - 72px); /* adjust if your navbar is higher/lower */
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2.5rem 1.5rem;
-  background: radial-gradient(circle at top, #eef2ff 0, #f3f4f6 40%, #e5e7eb 100%);
+  
+  /* SAME GRADIENT AS DASHBOARD */
+  background: linear-gradient(135deg, 
+    #FFB88C 0%,
+    #FED5B8 15%,
+    #FFF5E1 30%,
+    #E6F4F1 50%,
+    #C8E6F5 70%,
+    #A3D5F0 85%,
+    #7EC8E3 100%
+  );
 }
-
-/* ===== Shell: keeps everything aligned, but NO white card ===== */
 
 .auth-card {
   width: 100%;
@@ -17,40 +27,48 @@
   text-align: center;
 }
 
-/* ===== Header: Taalpunt + slogan ===== */
+/* =========================================
+   AUTH BRANDING - FREDOKA FONT
+   ========================================= */
 
-.auth-header {
-  margin-bottom: 1.6rem;
+.auth-branding {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.auth-logo {
-  font-size: 2.1rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.4rem;
+.auth-branding__title {
+  font-size: 3.5rem!important;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Fredoka', 'Baloo 2', 'Nunito', sans-serif !important; 
+  letter-spacing: -1px; 
 }
 
-.auth-logo-main {
-  color: #001489; /* Taalpunt blauw */
+.auth-branding__taal {
+  color: #001489;
 }
 
-.auth-logo-accent {
-  color: #ff4500; /* Taalpunt oranje/rood */
+.auth-branding__punt {
+  color: #FF4500;
 }
 
-.auth-tagline {
-  margin: 0;
+.auth-branding__slogan {
   font-size: 1rem;
-  color: #4b5563;
+  font-style: italic;
+  color: #27569c;
+  font-family: 'Fredoka';
+  margin: 0 0 0.5rem 0;
 }
 
-.auth-intro {
-  margin-top: 0.5rem;
+.auth-branding__subtitle {
   font-size: 0.9rem;
   color: #6b7280;
+  margin: 0;
 }
 
-/* ===== Form – floating inputs, no card background ===== */
+/* =========================================
+   FORM STYLING
+   ========================================= */
 
 .auth-form {
   display: flex;
@@ -58,8 +76,6 @@
   gap: 0.9rem;
   align-items: stretch;
 }
-
-/* Labels + fields */
 
 .auth-field {
   display: flex;
@@ -75,8 +91,6 @@
   padding-left: 0.3rem;
 }
 
-/* Floating pill inputs */
-
 .auth-input {
   border-radius: 999px;
   border: 1px solid #d1d5db;
@@ -85,11 +99,7 @@
   outline: none;
   background-color: #ffffff;
   box-shadow: 0 4px 0 rgba(15, 23, 42, 0.06);
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.08s ease,
-    background-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
 }
 
 .auth-input:focus {
@@ -99,47 +109,9 @@
   transform: translateY(-1px);
 }
 
-/* Hint under password (used in Register) */
-
-.auth-hint {
-  margin: 0.15rem 0 0;
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-/* ===== Role radio group (Register) ===== */
-
-.auth-fieldset {
-  border: none;
-  padding: 0.3rem 0 0.2rem;
-  margin: 0.4rem 0 0.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  text-align: left;
-}
-
-.auth-legend {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #374151;
-  padding-left: 0.3rem;
-  margin-bottom: 0.1rem;
-}
-
-.auth-radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.86rem;
-  color: #4b5563;
-}
-
-.auth-radio input[type="radio"] {
-  accent-color: #001489;
-}
-
-/* ===== Messages (error / success) ===== */
+/* =========================================
+   MESSAGES
+   ========================================= */
 
 .auth-message {
   font-size: 0.82rem;
@@ -156,7 +128,9 @@
   color: #15803d;
 }
 
-/* ===== Button – pill, 3D-ish like Duolingo ===== */
+/* =========================================
+   BUTTON
+   ========================================= */
 
 .auth-button {
   margin-top: 0.4rem;
@@ -169,28 +143,19 @@
   width: 100%;
   background-color: #ff4500;
   color: #ffffff;
-  box-shadow:
-    0 8px 0 rgba(148, 27, 0, 0.5),
-    0 12px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 0 rgba(148, 27, 0, 0.5), 0 12px 20px rgba(0, 0, 0, 0.2);
   transform: translateY(0);
-  transition:
-    background-color 0.12s ease,
-    box-shadow 0.12s ease,
-    transform 0.08s ease;
+  transition: background-color 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease;
 }
 
 .auth-button:hover:not(:disabled) {
   background-color: #e03d00;
-  box-shadow:
-    0 6px 0 rgba(148, 27, 0, 0.5),
-    0 10px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 0 rgba(148, 27, 0, 0.5), 0 10px 18px rgba(0, 0, 0, 0.25);
   transform: translateY(1px);
 }
 
 .auth-button:active:not(:disabled) {
-  box-shadow:
-    0 3px 0 rgba(148, 27, 0, 0.5),
-    0 5px 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 0 rgba(148, 27, 0, 0.5), 0 5px 12px rgba(0, 0, 0, 0.35);
   transform: translateY(3px);
 }
 
@@ -200,7 +165,9 @@
   box-shadow: 0 4px 0 rgba(148, 27, 0, 0.3);
 }
 
-/* ===== Footer link under form ===== */
+/* =========================================
+   FOOTER
+   ========================================= */
 
 .auth-footer-text {
   margin-top: 1rem;
@@ -219,50 +186,20 @@
   text-decoration: underline;
 }
 
-/* ===== Responsive tweaks ===== */
+/* =========================================
+   RESPONSIVE
+   ========================================= */
 
 @media (max-width: 480px) {
   .auth-page {
     padding: 2rem 1.25rem;
   }
 
-  .auth-logo {
-    font-size: 1.8rem;
+  .auth-branding__title {
+    font-size: 2rem;
   }
 
   .auth-card {
     max-width: 360px;
   }
-}
-/* Auth Branding */
-.auth-branding {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.auth-branding__title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0 0 0.75rem 0;
-}
-
-.auth-branding__taal {
-  color: var(--color-blue);
-}
-
-.auth-branding__punt {
-  color: var(--color-orange);
-}
-
-.auth-branding__slogan {
-  font-size: 1.125rem;
-  font-style: italic;
-  color: var(--color-dark-gray);
-  margin: 0 0 0.5rem 0;
-}
-
-.auth-branding__subtitle {
-  font-size: 0.9rem;
-  color: var(--color-gray);
-  margin: 0;
 }

@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
   Home,
@@ -11,10 +10,11 @@ import {
   GraduationCap,
   ClipboardList,
 } from "lucide-react";
+import TaalpuntLogo from "../../ui/logo/TaalpuntLogo";
 import "./Navbar.css";
-import logo from "../../../assets/images/taalpunt-logo.png";
 
 export default function Navbar() {
+  const location = useLocation();
   const { user, isAuth, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,63 +36,28 @@ export default function Navbar() {
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Public navbar (not logged in)
-  if (!isAuth) {
-    return (
-      <header className="navbar navbar--public">
-        <div className="navbar__inner">
-          <div className="navbar__brand">
-            <img
-              src={logo}
-              alt="Taalpunt Kapelle"
-              className="navbar__logo-img"
-            />
-            <div className="navbar__brand-text">
-              <span className="navbar__brand-name">Taalpunt</span>
-              <span className="navbar__brand-tagline">
-                Koffie, thee en taal – een goed verhaal
-              </span>
-            </div>
-          </div>
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
-          <nav className="navbar__auth-links">
-            <NavLink to="/login" className="navbar__link">
-              Inloggen
-            </NavLink>
-            <NavLink
-              to="/register"
-              className="navbar__link navbar__link--primary"
-            >
-              Registreren
-            </NavLink>
-          </nav>
-        </div>
-      </header>
-    );
+  // NO NAVBAR ON LOGIN/REGISTER
+  if (!isAuth) {
+    return null;
   }
 
-  // Private navbar (logged in)
+  // PRIVATE NAVBAR (LOGGED IN)
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        {/* Left: Brand */}
-        <div className="navbar__brand">
-          {logo ? (
-            <img
-              src={logo}
-              alt="Taalpunt Kapelle"
-              className="navbar__logo-img"
-            />
-          ) : (
-            <div className="navbar__logo-circle">T</div>
-          )}
+      
+        <Link to="/" className="navbar__brand">
+          <TaalpuntLogo width={140} height={42} />
           <div className="navbar__brand-text">
-            <span className="navbar__brand-name">Taalpunt</span>
             <span className="navbar__brand-tagline">
-              Koffie, thee en taal – een goed verhaal
+              Koffie, thee, taal én een goed verhaal
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Center: Navigation */}
         <nav className="navbar__nav">
@@ -159,7 +124,7 @@ export default function Navbar() {
                 }
               >
                 <Users size={20} />
-                <span>Docentenkamer</span>
+                <span>Docentenbord</span>
               </NavLink>
 
               <NavLink

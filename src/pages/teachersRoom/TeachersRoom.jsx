@@ -7,6 +7,7 @@ import {
   deleteLesson,
 } from "../../services/lessonService";
 import { getHomework, getSubmissions } from "../../services/homeworkService";
+import { getUsers } from "../../services/userService";
 import { getEnrollments } from "../../services/enrollmentService";
 import {
   getActivities,
@@ -21,9 +22,8 @@ import Button from "../../components/ui/button/Button";
 import HomeworkGradingModal from "../../components/homework/HomeworkGradingModal";
 import { updateSubmission } from "../../services/homeworkService";
 import { Edit2, Trash2 } from "lucide-react";
+import Modal from "../../components/ui/modal/Modal";
 import "./TeachersRoom.css";
-
-
 
 export default function TeachersRoom() {
   const { user } = useAuth();
@@ -52,6 +52,7 @@ export default function TeachersRoom() {
   const [activities, setActivities] = useState([]);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
+  const [deleteLessonModal, setDeleteLessonModal] = useState(null);
 
   // Overzicht-statistieken
   const [stats, setStats] = useState({
@@ -130,34 +131,112 @@ export default function TeachersRoom() {
   };
 
   const fetchLessons = async () => {
-    const { data } = await getLessons();
-    setLessons(sortByNewest(Array.isArray(data) ? data : [], "date"));
+    try {
+      const [lessonsRes, usersRes] = await Promise.allSettled([
+        getLessons(),
+        getUsers(),
+      ]);
+
+      const lessons =
+        lessonsRes.status === "fulfilled" ? lessonsRes.value.data : [];
+      const users = usersRes.status === "fulfilled" ? usersRes.value.data : [];
+
+      // Create user map
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] =
+          user.username || user.email?.split("@")[0] || "Onbekend";
+      });
+
+      // Enrich lessons with teacher names
+      const enrichedLessons = lessons.map((lesson) => ({
+        ...lesson,
+        teacherName: userMap[lesson.teacherId] || "Onbekend",
+      }));
+
+      setLessons(
+        sortByNewest(
+          Array.isArray(enrichedLessons) ? enrichedLessons : [],
+          "date"
+        )
+      );
+    } catch (err) {
+      console.error("Fetch lessons error:", err);
+      setLessons([]);
+    }
   };
 
+
   const fetchEnrollmentsData = async () => {
-    const { data } = await getEnrollments();
-    setEnrollments(Array.isArray(data) ? data : []);
+    try {
+      const [enrollmentsRes, usersRes] = await Promise.allSettled([
+        getEnrollments(),
+        getUsers(),
+      ]);
+
+      const enrollments =
+        enrollmentsRes.status === "fulfilled" ? enrollmentsRes.value.data : [];
+      const users = usersRes.status === "fulfilled" ? usersRes.value.data : [];
+
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] = {
+          username: user.username || user.email?.split("@")[0] || "Onbekend",
+          email: user.email || "—",
+        };
+      });
+
+      const enrichedEnrollments = enrollments.map((enrollment) => ({
+        ...enrollment,
+        studentName:
+          enrollment.studentName ||
+          userMap[enrollment.studentId]?.username ||
+          "Onbekend",
+        studentEmail:
+          enrollment.studentEmail ||
+          userMap[enrollment.studentId]?.email ||
+          "—",
+      }));
+
+      setEnrollments(
+        Array.isArray(enrichedEnrollments) ? enrichedEnrollments : []
+      );
+    } catch (error) {
+      console.error("Fetch enrollments error:", error);
+      setEnrollments([]);
+    }
   };
 
   const fetchHomeworkData = async () => {
     try {
-      const [homeworkRes, submissionsRes] = await Promise.allSettled([
+      const [homeworkRes, submissionsRes, usersRes] = await Promise.allSettled([
         getHomework(),
         getSubmissions(),
+        getUsers(),
       ]);
 
       const homework =
         homeworkRes.status === "fulfilled" ? homeworkRes.value.data : [];
       const submissions =
         submissionsRes.status === "fulfilled" ? submissionsRes.value.data : [];
+      const users = usersRes.status === "fulfilled" ? usersRes.value.data : [];
 
-      // Merge submissions with homework and student data
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] =
+          user.username || user.email?.split("@")[0] || "Onbekende cursist";
+      });
+
       const enrichedSubmissions = submissions.map((submission) => {
+         console.log("Submission data:", submission);
         const hw = homework.find((h) => h.id === submission.homeworkId);
         return {
           ...submission,
           lessonTitle: hw?.title || "Onbekend huiswerk",
-          studentName: submission.studentName || "Onbekende cursist",
+          studentName:
+            submission.studentName ||
+            userMap[submission.studentId] ||
+            "Onbekende cursist",
           submittedAt:
             submission.submittedAt ||
             submission.createdAt ||
@@ -256,26 +335,36 @@ export default function TeachersRoom() {
       setError("Kon les niet bijwerken.");
     }
   };
-  const handleDeleteLesson = async (lessonId) => {
-    if (!window.confirm("Weet je zeker dat je deze les wilt verwijderen?")) {
-      return;
-    }
+  const handleDeleteLesson = async () => {
+    if (!deleteLessonModal) return;
 
     try {
-      await deleteLesson(lessonId);
-      setLessons((prev) => prev.filter((l) => l.id !== lessonId));
+      await deleteLesson(deleteLessonModal.id);
+      setLessons((prev) => prev.filter((l) => l.id !== deleteLessonModal.id));
+      setDeleteLessonModal(null);
     } catch (err) {
       setError("Kon les niet verwijderen.");
       console.error("Delete lesson error:", err);
+      setDeleteLessonModal(null);
     }
   };
 
   const handleSaveHomeworkFeedback = async (submissionId, feedback) => {
     try {
+      // Find the submission to get all required fields
+      const submission = homeworkSubmissions.find((s) => s.id === submissionId);
+
+      if (!submission) {
+        throw new Error("Submission not found");
+      }
+
+      // Send complete submission object with updated fields
       await updateSubmission(submissionId, {
+        homeworkId: submission.homeworkId,
+        studentId: submission.studentId,
+        content: submission.content,
         feedback: feedback,
         reviewed: true,
-        reviewedAt: new Date().toISOString(),
       });
 
       // Update local state
@@ -397,20 +486,208 @@ export default function TeachersRoom() {
         <div className="action-buttons">
           <Button
             onClick={() => {
-              setActiveTab("lessons");
               setShowLessonForm(true);
+              // Don't change tab - stay on overview
             }}
           >
             + Nieuwe les
           </Button>
-          <Button onClick={() => setActiveTab("homework")} variant="secondary">
-            Huiswerk beoordelen
+          <Button
+            onClick={() => {
+              setShowActivityForm(true);
+              // Don't change tab - stay on overview
+            }}
+            variant="secondary"
+          >
+            + Nieuwe activiteit
           </Button>
-          <Button onClick={() => setActiveTab("students")} variant="secondary">
-            Cursisten beheren
-          </Button>
+          
         </div>
       </div>
+
+      {/* Show forms in modal when needed */}
+      {showLessonForm && activeTab === "overview" && (
+        <Modal
+          isOpen={true}
+          title={editingLesson ? "Les bewerken" : "Nieuwe les aanmaken"}
+          onCancel={() => {
+            setShowLessonForm(false);
+            setEditingLesson(null);
+          }}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const lessonData = {
+                title: formData.get("title"),
+                description: formData.get("description"),
+                date: formData.get("date"),
+                startTime: formData.get("startTime"),
+                endTime: formData.get("endTime"),
+                location: formData.get("location"),
+                level: formData.get("level"),
+                materialsUrl: formData.get("materialsUrl") || "",
+              };
+
+              if (editingLesson) {
+                handleUpdateLesson(editingLesson.id, lessonData);
+              } else {
+                handleCreateLesson(lessonData);
+              }
+            }}
+            className="modal-form"
+          >
+            <input
+              name="title"
+              placeholder="Les titel"
+              defaultValue={editingLesson?.title}
+              required
+            />
+            <textarea
+              name="description"
+              placeholder="Beschrijving (minimaal 10 tekens)"
+              defaultValue={editingLesson?.description}
+              required
+              minLength={10}
+            />
+            <input
+              name="date"
+              type="date"
+              defaultValue={
+                editingLesson?.date ? editingLesson.date.split("T")[0] : ""
+              }
+              required
+            />
+            <input
+              name="startTime"
+              type="time"
+              defaultValue={editingLesson?.startTime || "10:00"}
+              required
+            />
+            <input
+              name="endTime"
+              type="time"
+              defaultValue={editingLesson?.endTime || "12:00"}
+              required
+            />
+            <select
+              name="level"
+              defaultValue={editingLesson?.level || "A1"}
+              required
+            >
+              <option value="A1">A1 - Beginner</option>
+              <option value="A2">A2 - Basis</option>
+              <option value="B1">B1 - Midden</option>
+              <option value="B2">B2 - Gevorderd</option>
+            </select>
+            <input
+              name="location"
+              placeholder="Locatie"
+              defaultValue={editingLesson?.location}
+              required
+            />
+            <input
+              name="materialsUrl"
+              type="url"
+              placeholder="Link naar materiaal (optioneel)"
+              defaultValue={editingLesson?.materialsUrl}
+            />
+            <div className="form-actions">
+              <Button type="submit">
+                {editingLesson ? "Bijwerken" : "Aanmaken"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setShowLessonForm(false);
+                  setEditingLesson(null);
+                }}
+              >
+                Annuleren
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {showActivityForm && activeTab === "overview" && (
+        <Modal
+          isOpen={true}
+          title="Nieuwe activiteit aanmaken"
+          onCancel={() => setShowActivityForm(false)}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const activityData = {
+                title: formData.get("title"),
+                description: formData.get("description"),
+                date: formData.get("date"),
+                startTime: formData.get("startTime"),
+                endTime: formData.get("endTime"),
+                location: formData.get("location"),
+                type: formData.get("type") || "Gemeenschapsevenement",
+              };
+
+              handleCreateActivity(activityData);
+            }}
+            className="modal-form"
+          >
+            <input
+              name="title"
+              placeholder="Titel van de activiteit"
+              required
+            />
+            <textarea
+              name="description"
+              placeholder="Korte beschrijving"
+              required
+            />
+            <input name="date" type="date" required />
+            <div className="form-row">
+              <input
+                name="startTime"
+                type="time"
+                placeholder="Starttijd"
+                required
+              />
+              <input
+                name="endTime"
+                type="time"
+                placeholder="Eindtijd"
+                required
+              />
+            </div>
+            <input
+              name="location"
+              placeholder="Locatie (bijv. Dorpshuis Kapelle)"
+              required
+            />
+            <select name="type" defaultValue="Gemeenschapsevenement">
+              <option value="Gemeenschapsevenement">
+                Gemeenschapsevenement
+              </option>
+              <option value="Lesgerelateerd">Lesgerelateerd</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Informeel">Informeel</option>
+            </select>
+
+            <div className="form-actions">
+              <Button type="submit">Activiteit aanmaken</Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowActivityForm(false)}
+              >
+                Annuleren
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 
@@ -551,6 +828,7 @@ export default function TeachersRoom() {
                 <th>Datum</th>
                 <th>Tijd</th>
                 <th>Locatie</th>
+                <th>Docent</th>
                 <th>Acties</th>
               </tr>
             </thead>
@@ -573,6 +851,7 @@ export default function TeachersRoom() {
                       : "—"}
                   </td>
                   <td>{lesson.location}</td>
+                  <td>{lesson.teacherName || user?.username || "—"}</td>
                   <td>
                     <Button
                       size="sm"
@@ -591,7 +870,7 @@ export default function TeachersRoom() {
                       variant="danger"
                       className="icon-btn"
                       title="Les verwijderen"
-                      onClick={() => handleDeleteLesson(lesson.id)}
+                      onClick={() => setDeleteLessonModal(lesson)}
                     >
                       <Trash2 size={16} />
                     </Button>
@@ -666,19 +945,27 @@ export default function TeachersRoom() {
                   {submission.reviewed ? "Beoordeeld" : "Te beoordelen"}
                 </span>
               </div>
+
               <p>Cursist: {submission.studentName}</p>
               <p>
                 Ingeleverd:{" "}
                 {new Date(submission.submittedAt).toLocaleString("nl-NL")}
               </p>
-              {!submission.reviewed && (
-                <Button
-                  size="sm"
-                  onClick={() => setGradingSubmission(submission)}
-                >
-                  Beoordelen
-                </Button>
+
+              {/* 🔹 Toon feedback als die bestaat */}
+              {submission.feedback && (
+                <p className="homework-card__feedback">
+                  <strong>Feedback:</strong> {submission.feedback}
+                </p>
               )}
+
+              {/* 🔹 Laat de modal ook openen als het al beoordeeld is */}
+              <Button
+                size="sm"
+                onClick={() => setGradingSubmission(submission)}
+              >
+                {submission.reviewed ? "Feedback bewerken" : "Beoordelen"}
+              </Button>
             </div>
           ))}
         </div>
@@ -924,6 +1211,16 @@ export default function TeachersRoom() {
           onSave={handleSaveHomeworkFeedback}
         />
       )}
+      {/* Delete Lesson Modal */}
+      <Modal
+        isOpen={Boolean(deleteLessonModal)}
+        title="Les verwijderen"
+        message={`Weet je zeker dat je "${deleteLessonModal?.title}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`}
+        confirmLabel="Ja, verwijderen"
+        cancelLabel="Annuleren"
+        onConfirm={handleDeleteLesson}
+        onCancel={() => setDeleteLessonModal(null)}
+      />
     </div>
   );
 }
