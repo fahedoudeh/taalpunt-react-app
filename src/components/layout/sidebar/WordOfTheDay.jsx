@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { WORDS } from "../../../data/words";
 import { todayPick } from "../../../helpers/dailyPick";
 
+
 export default function WordOfTheDay() {
   const pick = useMemo(() => todayPick(WORDS), []);
   const [open, setOpen] = useState(false);

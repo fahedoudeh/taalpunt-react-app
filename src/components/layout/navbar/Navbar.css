@@ -22,9 +22,10 @@
   margin: 0 auto;
   padding: 0 1.5rem;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* LEFT | CENTER | RIGHT */
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* =========================================
@@ -38,6 +39,7 @@
   flex-shrink: 0;
   text-decoration: none;
   cursor: pointer;
+  justify-self: start; /* Align to left */
 }
 
 .navbar__logo-img {
@@ -64,9 +66,9 @@
 }
 
 .navbar__brand-tagline {
-  font-size: 0.95rem;
+  
   color: rgba(255, 255, 255, 0.9);
-  /* font-style: italic; */
+  font-style: italic;
   font-family: 'Fredoka';
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -77,7 +79,7 @@
 }
 
 /* =========================================
-   NAVIGATION LINKS
+   NAVIGATION LINKS - PERFECTLY CENTERED
    ========================================= */
 
 .navbar__nav {
@@ -85,6 +87,7 @@
   align-items: center;
   gap: 0.5rem;
   justify-content: center;
+  justify-self: center; /* Perfect center in grid */
 }
 
 .navbar__nav-item {
@@ -103,7 +106,7 @@
 }
 
 .navbar__nav-item svg {
-  width: 24px; /* BIGGER ICONS */
+  width: 24px;
   height: 24px;
   stroke-width: 2;
 }
@@ -138,6 +141,7 @@
 .navbar__user {
   position: relative;
   flex-shrink: 0;
+  justify-self: end; /* Align to right */
 }
 
 .navbar__user-trigger {
@@ -231,6 +235,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  justify-self: end; /* Align to right */
 }
 
 .navbar__link {
@@ -312,6 +317,7 @@
 
   .navbar__inner {
     padding: 0.5rem 0.75rem;
+    display: flex;
     justify-content: center;
   }
 

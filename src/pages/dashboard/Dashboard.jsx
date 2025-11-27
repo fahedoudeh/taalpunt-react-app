@@ -525,7 +525,7 @@ export default function Dashboard() {
           <OverviewCard
             title="Docentenbord"
             moreTo="/teachers-board"
-            className="overview-card--green"
+            className="overview-card--purple"
           >
             {postsLoading && <Loader label="Berichten laden…" />}
             {!postsLoading && postsErr && <ErrorNotice message={postsErr} />}
@@ -544,7 +544,7 @@ export default function Dashboard() {
                 {take(teacherPosts, 5).map((post) => (
                   <li
                     key={post.id}
-                    className="dashboard-card-item dashboard-card-item--green"
+                    className="dashboard-card-item dashboard-card-item--purple"
                   >
                     <Link to="/teachers-board" className="dashboard-card-link">
                       <span className="dashboard-card-title">

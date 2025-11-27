@@ -1,106 +1,152 @@
-/* src/components/dashboard/OverviewCard.css */
+/* =========================================
+   OVERVIEW CARD - DASHBOARD
+   ========================================= */
 
-.ovc {
+.overview-card {
   background: var(--color-white);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 320px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.ovc:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.overview-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.ovc__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
+/* =========================================
+   HEADER
+   ========================================= */
+
+.overview-card__header {
+  margin-bottom: 1rem;
   padding-bottom: 0.75rem;
   border-bottom: 2px solid var(--color-border);
 }
 
-.ovc__title {
+.overview-card__title {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-blue);
+  font-weight: 700;
   margin: 0;
-}
-
-.ovc__more {
-  font-size: 0.875rem;
-  color: var(--color-orange);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.ovc__more:hover {
-  color: var(--color-dark-orange);
-  text-decoration: underline;
-}
-
-.ovc__body {
-  flex: 1;
-}
-
-.ovc ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.ovc li {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--color-background);
-}
-
-.ovc li:last-child {
-  border-bottom: none;
-}
-
-.ovc a {
   color: var(--color-black);
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
-  display: block;
 }
 
-.ovc a:hover {
+/* COLOR VARIANTS FOR TITLES */
+.overview-card--blue .overview-card__title {
   color: var(--color-blue);
 }
 
+.overview-card--orange .overview-card__title {
+  color: var(--color-orange);
+}
+
+.overview-card--green .overview-card__title {
+  color: #10B981; /* Green */
+}
+
+.overview-card--purple .overview-card__title {
+  color: #8B5CF6; /* Purple */
+}
+
+/* =========================================
+   CONTENT - GROWS TO FILL SPACE
+   ========================================= */
+
+.overview-card__content {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+/* =========================================
+   FOOTER - LINK AT BOTTOM
+   ========================================= */
+
+.overview-card__footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.overview-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* LINK COLORS BASED ON CARD TYPE */
+.overview-card--blue .overview-card__link {
+  color: var(--color-blue);
+}
+
+.overview-card--orange .overview-card__link {
+  color: var(--color-orange);
+}
+
+.overview-card--green .overview-card__link {
+  color: #10B981; /* Green */
+}
+
+.overview-card--purple .overview-card__link {
+  color: #8B5CF6; /* Purple */
+}
+
+.overview-card__link:hover {
+  opacity: 0.8;
+  gap: 0.75rem;
+}
+
+.overview-card__link svg {
+  transition: transform 0.2s ease;
+}
+
+.overview-card__link:hover svg {
+  transform: translateX(4px);
+}
+
+/* =========================================
+   GRADIENT BACKGROUNDS (OPTIONAL)
+   ========================================= */
 
 .overview-card--blue {
   background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-  border-left: 4px solid var(--color-blue);
-}
-
-.overview-card--blue .ovc__title {
-  color: var(--color-blue);
 }
 
 .overview-card--orange {
-  background: linear-gradient(135deg, #FFE8E0 0%, #FFCCBC 100%);
-  border-left: 4px solid var(--color-orange);
-}
-
-.overview-card--orange .ovc__title {
-  color: var(--color-orange);
+  background: linear-gradient(135deg, #FFE0B2 0%, #FFCCBC 100%);
 }
 
 .overview-card--green {
-  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
-  border-left: 4px solid #00C853;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
 }
 
-.overview-card--green .ovc__title {
-  color: #00C853;
+.overview-card--purple {
+  background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%);
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+  .overview-card {
+    min-height: 280px;
+    padding: 1.25rem;
+  }
+
+  .overview-card__title {
+    font-size: 1.125rem;
+  }
+
+  .overview-card__link {
+    font-size: 0.85rem;
+  }
 }

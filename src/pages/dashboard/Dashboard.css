@@ -183,7 +183,7 @@
 }
 
 /* =========================================
-   DASHBOARD CARD SUB-ITEMS WITH BORDERS
+   DASHBOARD CARD SUB-ITEMS WITH BORDERS - FIXED
    ========================================= */
 
 .dashboard-card-list {
@@ -193,34 +193,55 @@
 }
 
 .dashboard-card-item {
-  margin-bottom: 0.75rem;
-  padding-left: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  padding-left: 1rem;
   border-left: 3px solid transparent;
   transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .dashboard-card-item:last-child {
   margin-bottom: 0;
 }
 
+/* Blue border for lessons */
+.dashboard-card-item--blue {
+  border-left-color: var(--color-blue);
+}
 
+/* Orange border for activities */
+.dashboard-card-item--orange {
+  border-left-color: var(--color-orange);
+}
 
+/* Green border for posts */
+.dashboard-card-item--green {
+  border-left-color: var(--color-green);
+}
+/* Purple border for teacher posts */
+.dashboard-card-item--purple {
+  border-left-color: #8B5CF6; /* Purple color */
+}
 .dashboard-card-item:hover {
   border-left-width: 4px;
-  padding-left: 0.65rem;
+  padding-left: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .dashboard-card-link {
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem; /* INCREASED GAP FROM 0.25rem */
 }
 
 .dashboard-card-title {
   color: var(--color-blue);
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
   transition: color 0.2s ease;
 }
 
@@ -229,8 +250,18 @@
 }
 
 .dashboard-card-meta {
-  font-size: 0.75rem;
-  color: var(--color-gray);
+  font-size: 0.8rem;
+  color: #4B5563; /* DARKER GRAY - WAS var(--color-gray) */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-top: 0.25rem; /* EXTRA SPACING */
+}
+
+.dashboard-card-meta::before {
+  content: "📅";
+  font-size: 0.85rem;
 }
 
 /* =========================================
@@ -283,6 +314,19 @@
 
   .dashboard-hero-right {
     flex-direction: column;
+  }
+
+  .dashboard-card-item {
+    padding: 0.65rem;
+    padding-left: 0.85rem;
+  }
+
+  .dashboard-card-title {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-card-meta {
+    font-size: 0.75rem;
   }
 }
 

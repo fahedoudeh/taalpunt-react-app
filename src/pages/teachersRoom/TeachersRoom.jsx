@@ -52,6 +52,7 @@ export default function TeachersRoom() {
   const [activities, setActivities] = useState([]);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
+  const [deleteActivityModal, setDeleteActivityModal] = useState(null); 
   const [deleteLessonModal, setDeleteLessonModal] = useState(null);
 
   // Overzicht-statistieken
@@ -228,7 +229,7 @@ export default function TeachersRoom() {
       });
 
       const enrichedSubmissions = submissions.map((submission) => {
-         console.log("Submission data:", submission);
+         
         const hw = homework.find((h) => h.id === submission.homeworkId);
         return {
           ...submission,
@@ -311,12 +312,7 @@ export default function TeachersRoom() {
         teacherId: Number(user.id),
       };
 
-      console.log("Update payload:", payload);
-      console.log("Date check:", {
-        date: payload.date,
-        dateType: typeof payload.date,
-      });
-
+      
       await updateLesson(lessonId, payload);
       setLessons((prev) =>
         sortByNewest(
@@ -443,19 +439,19 @@ export default function TeachersRoom() {
     }
   };
 
-  const handleDeleteActivity = async (activityId) => {
-    if (
-      !window.confirm("Weet je zeker dat je deze activiteit wilt verwijderen?")
-    ) {
-      return;
-    }
+  const handleDeleteActivity = async () => {
+    if (!deleteActivityModal) return;
 
     try {
-      await deleteActivity(activityId);
-      setActivities((prev) => prev.filter((a) => a.id !== activityId));
+      await deleteActivity(deleteActivityModal.id);
+      setActivities((prev) =>
+        prev.filter((a) => a.id !== deleteActivityModal.id)
+      );
+      setDeleteActivityModal(null);
     } catch (err) {
       setError("Kon activiteit niet verwijderen.");
       console.error("Delete activity error:", err);
+      setDeleteActivityModal(null);
     }
   };
 
@@ -1136,7 +1132,7 @@ export default function TeachersRoom() {
                       variant="danger"
                       className="icon-btn"
                       title="Activiteit verwijderen"
-                      onClick={() => handleDeleteActivity(activity.id)}
+                      onClick={() => setDeleteActivityModal(activity)}
                     >
                       <Trash2 size={16} />
                     </Button>
@@ -1220,6 +1216,16 @@ export default function TeachersRoom() {
         cancelLabel="Annuleren"
         onConfirm={handleDeleteLesson}
         onCancel={() => setDeleteLessonModal(null)}
+      />
+      {/* Delete Activity Modal */}
+      <Modal
+        isOpen={Boolean(deleteActivityModal)}
+        title="Activiteit verwijderen"
+        message={`Weet je zeker dat je "${deleteActivityModal?.title}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`}
+        confirmLabel="Ja, verwijderen"
+        cancelLabel="Annuleren"
+        onConfirm={handleDeleteActivity}
+        onCancel={() => setDeleteActivityModal(null)}
       />
     </div>
   );

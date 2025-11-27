@@ -29,7 +29,7 @@ export default function Login() {
       if (!token) throw new Error("Geen token in response.");
 
       const decodedT = jwtDecode(token);
-      console.log("payload of the token", decodedT);
+      
 
       login(token);
       navigate(from, { replace: true });
