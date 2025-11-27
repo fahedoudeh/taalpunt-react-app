@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { getUserById } from "../services/userService";

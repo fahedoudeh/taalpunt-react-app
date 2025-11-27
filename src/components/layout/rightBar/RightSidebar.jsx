@@ -1,4 +1,3 @@
-// src/components/layout/rightBar/RightSidebar.jsx
 import "./RightSidebar.css";
 import WordOfTheDay from "../sidebar/WordOfTheDay";
 import ExpressionOfTheDay from "../sidebar/ExpressionOfTheDay";
@@ -33,7 +32,8 @@ export default function RightSidebar() {
       <ExpressionOfTheDay />
       <JokeOfTheDay />
 
-      <div className="right__card">
+      {/* HANDIGE LINKS - BLUE BORDER */}
+      <div className="right__card right__card--links">
         <h3 className="right__title">Handige links</h3>
         <ul className="right__list">
           {links.map((l) => (

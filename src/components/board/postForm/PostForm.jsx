@@ -1,4 +1,3 @@
-// src/components/board/postForm/PostForm.jsx
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../contexts/AuthContext";
 import Button from "../../ui/button/Button";
@@ -105,15 +104,21 @@ export default function PostForm({
             required: "Type is verplicht",
           })}
         >
-          <option value="Tip">💡 Tip</option>
-          <option value="Vraag">❓ Vraag</option>
-          <option value="Aankondiging">📢 Aankondiging</option>
-          <option value="Hulp gezocht">🤝 Hulp gezocht</option>
-          <option value="Discussie">💬 Discussie</option>
-
-          {/* Notulen – alleen voor docenten/admin en alleen in teachers context */}
-          {isTeacherLike && isTeacherContext && (
-            <option value="Notulen">📝 Notulen</option>
+          {/* Check if this is teacher board by looking at initialData */}
+          {initialData?.teachersOnly ? (
+            <>
+              <option value="Planning">📅 Planning</option>
+              <option value="Notulen">📝 Notulen</option>
+              <option value="Mededeling">📢 Mededeling</option>
+              <option value="Vraag">❓ Vraag</option>
+            </>
+          ) : (
+            <>
+              <option value="Tip">💡 Tip</option>
+              <option value="Vraag">❓ Vraag</option>
+              <option value="Aankondiging">📢 Aankondiging</option>
+              <option value="Discussie">💬 Discussie</option>
+            </>
           )}
         </select>
         {errors.type && (

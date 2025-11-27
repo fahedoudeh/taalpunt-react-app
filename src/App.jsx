@@ -5,6 +5,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Lessons from "./pages/lessons/Lessons.jsx";
 import LessonDetail from "./pages/lessonDetail/LessonDetail.jsx";
 import Homework from "./pages/homework/Homework.jsx";
+import HomeworkDetail from "./pages/homeworkDetail/HomeworkDetail.jsx";
 import Activities from "./pages/activities/Activities.jsx";
 import ActivityDetail from "./pages/activityDetail/ActivityDetail.jsx";
 import Board from "./pages/board/Board.jsx";
@@ -38,7 +39,8 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/lessons/:id" element={<LessonDetail />} />
-          <Route path="/homework" element={<Homework />} /> {/* ADD THIS */}
+          <Route path="/homework" element={<Homework />} />
+          <Route path="homework/:id" element={<HomeworkDetail />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />
           <Route path="/board" element={<Board />} />

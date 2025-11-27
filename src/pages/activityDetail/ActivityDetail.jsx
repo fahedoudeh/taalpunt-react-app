@@ -1,4 +1,3 @@
-// src/pages/activityDetail/ActivityDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
@@ -15,6 +14,8 @@ export default function ActivityDetail() {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+
+  
 
   useEffect(() => {
     (async () => {

@@ -1,5 +1,3 @@
-// src/helpers/formatDate.js
-
 /**
  * formatDate(inputValue, withTime = true)
  * - inputValue: Date | ISO string | timestamp

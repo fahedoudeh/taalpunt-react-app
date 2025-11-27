@@ -3,8 +3,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { loginRequest } from "../../services/authService";
 import { useAuth } from "../../contexts/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import Button from "../../components/ui/button/Button";
-import "./Login.css"
+import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -58,7 +57,7 @@ export default function Login() {
               <span className="auth-branding__punt">punt</span>
             </h1>
             <p className="auth-branding__slogan">
-              Koffie, thee en taal – een goed verhaal
+              Koffie, thee, taal én een goed verhaal
             </p>
             <p className="auth-branding__subtitle">
               Log in om je lessen, activiteiten en het Taalpunt-board te zien.
@@ -99,15 +98,13 @@ export default function Login() {
 
           {err && <p className="auth-message auth-message--error">{err}</p>}
 
-          <Button
+          <button
             type="submit"
-            variant="accent"
-            size="lg"
-            fullWidth
+            className="auth-button"
             disabled={loading}
           >
             {loading ? "Bezig…" : "Inloggen"}
-          </Button>
+          </button>
         </form>
 
         <p className="auth-footer-text">

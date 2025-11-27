@@ -1,4 +1,3 @@
-// src/components/ui/empty/EmptyState.jsx
 import { Link } from "react-router-dom";
 import "./EmptyState.css";
 

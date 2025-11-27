@@ -102,6 +102,12 @@ export default function StudentHomeworkSubmit({ homework }) {
             <p>{submissionData.comment}</p>
           </div>
         )}
+        {submissionData.feedback && (
+          <div className="homework-submitted__feedback">
+            <strong>Feedback van docent:</strong>
+            <p>{submissionData.feedback}</p>
+          </div>
+        )}
 
         {submissionData.submittedAt && (
           <p className="homework-submitted__date">

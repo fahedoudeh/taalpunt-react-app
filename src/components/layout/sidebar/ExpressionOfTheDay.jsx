@@ -1,4 +1,3 @@
-// src/components/layout/sidebar/ExpressionOfTheDay.jsx
 import { useState, useMemo } from "react";
 import { EXPRESSIONS } from "../../../data/expressions";
 import { todayPick } from "../../../helpers/dailyPick";
@@ -10,7 +9,7 @@ export default function ExpressionOfTheDay() {
   if (!pick) return null;
 
   return (
-    <div className="right__card">
+    <div className="right__card right__card--expression">
       <h4 className="right__title">Uitdrukking van de dag</h4>
 
       <div className="daily-term">{pick.term}</div>

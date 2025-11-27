@@ -147,3 +147,10 @@
   color: #6b7280;
   margin-top: 0.5rem;
 }
+.homework-submitted__feedback {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: #f5f5ff;
+  font-size: 0.95rem;
+}

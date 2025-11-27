@@ -1,7 +1,6 @@
-// src/services/weatherService.js
 import axios from "axios";
 
-// Rough coordinates for Kapelle, NL
+// coordinates for Kapelle, NL
 const KAPELLE_COORDS = {
   latitude: 51.493,
   longitude: 3.958,

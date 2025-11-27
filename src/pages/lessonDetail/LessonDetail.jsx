@@ -224,12 +224,51 @@ export default function LessonDetail() {
             <p>
               <strong>📊 Niveau:</strong> {lesson.level}
             </p>
+            
           </div>
 
           {lesson.description && (
             <div className="lesson-card__description">
               <strong>Beschrijving:</strong>
               <p>{lesson.description}</p>
+            </div>
+          )}
+          {/* ATTENDANCE SECTION - Only for students */}
+          {!isTeacher && (
+            <AttendanceTracker
+              lessonId={lesson.id}
+              attendees={attendance}
+              onAttendanceChange={handleAttendanceChange}
+            />
+          )}
+
+          {/* TEACHER ATTENDANCE VIEW */}
+          {isTeacher && attendance.length > 0 && (
+            <div className="lesson-attendance-summary">
+              <h3>Aanwezigheid</h3>
+              <div className="attendance-stats">
+                <div className="attendance-stat attendance-stat--coming">
+                  <span className="attendance-stat__label">Komt</span>
+                  <span className="attendance-stat__count">
+                    {attendance.filter((att) => att.status === "coming").length}
+                  </span>
+                </div>
+                <div className="attendance-stat attendance-stat--maybe">
+                  <span className="attendance-stat__label">Misschien</span>
+                  <span className="attendance-stat__count">
+                    {attendance.filter((att) => att.status === "maybe").length}
+                  </span>
+                </div>
+                <div className="attendance-stat attendance-stat--not-coming">
+                  <span className="attendance-stat__label">Komt niet</span>
+                  <span className="attendance-stat__count">
+                    {
+                      attendance.filter((att) => att.status === "not_coming")
+                        .length
+                    }
+                  </span>
+                </div>
+              </div>
             </div>
           )}
 
@@ -243,42 +282,6 @@ export default function LessonDetail() {
           )}
         </div>
       </div>
-
-      {/* ATTENDANCE SECTION - Only for students */}
-      {!isTeacher && (
-        <AttendanceTracker
-          lessonId={lesson.id}
-          attendees={attendance}
-          onAttendanceChange={handleAttendanceChange}
-        />
-      )}
-
-      {/* TEACHER ATTENDANCE VIEW */}
-      {isTeacher && attendance.length > 0 && (
-        <div className="lesson-attendance-summary">
-          <h3>Aanwezigheid</h3>
-          <div className="attendance-stats">
-            <div className="attendance-stat attendance-stat--coming">
-              <span className="attendance-stat__label">Komt</span>
-              <span className="attendance-stat__count">
-                {attendance.filter((att) => att.status === "coming").length}
-              </span>
-            </div>
-            <div className="attendance-stat attendance-stat--maybe">
-              <span className="attendance-stat__label">Misschien</span>
-              <span className="attendance-stat__count">
-                {attendance.filter((att) => att.status === "maybe").length}
-              </span>
-            </div>
-            <div className="attendance-stat attendance-stat--not-coming">
-              <span className="attendance-stat__label">Komt niet</span>
-              <span className="attendance-stat__count">
-                {attendance.filter((att) => att.status === "not_coming").length}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
 
       <hr className="lesson-section-divider" />
 

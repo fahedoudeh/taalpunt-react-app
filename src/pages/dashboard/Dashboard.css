@@ -1,4 +1,6 @@
-/* ===== HERO SECTION - COMPACT STYLE ===== */
+/* =========================================
+   HERO SECTION
+   ========================================= */
 
 .dashboard-hero {
   background: linear-gradient(135deg, var(--color-blue) 0%, #002DB3 50%, #001BA0 100%);
@@ -50,7 +52,7 @@
 }
 
 .dashboard-hero-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.9);
   margin: 0 0 0.625rem 0;
@@ -67,7 +69,7 @@
   font-weight: 600;
 }
 
-/* Hero Right Side - Stacked Cards */
+/* Hero Right Side */
 
 .dashboard-hero-right {
   display: flex;
@@ -170,7 +172,9 @@
   color: #FCA5A5;
 }
 
-/* ===== DASHBOARD GRID ===== */
+/* =========================================
+   DASHBOARD GRID
+   ========================================= */
 
 .dashboard-grid {
   display: grid;
@@ -178,7 +182,60 @@
   gap: 1.25rem;
 }
 
-/* ===== RESPONSIVE ===== */
+/* =========================================
+   DASHBOARD CARD SUB-ITEMS WITH BORDERS
+   ========================================= */
+
+.dashboard-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-card-item {
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.dashboard-card-item:last-child {
+  margin-bottom: 0;
+}
+
+
+
+.dashboard-card-item:hover {
+  border-left-width: 4px;
+  padding-left: 0.65rem;
+}
+
+.dashboard-card-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-card-title {
+  color: var(--color-blue);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.dashboard-card-link:hover .dashboard-card-title {
+  color: var(--color-orange);
+}
+
+.dashboard-card-meta {
+  font-size: 0.75rem;
+  color: var(--color-gray);
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
 
 @media (max-width: 1024px) {
   .dashboard-hero {

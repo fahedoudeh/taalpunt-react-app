@@ -1,4 +1,3 @@
-// src/components/ui/modal/Modal.jsx
 import "./Modal.css";
 
 export default function Modal({
@@ -21,11 +20,17 @@ export default function Modal({
         {/* Header */}
         <header className="tp-modal__header">
           {title && <h2 className="tp-modal__title">{title}</h2>}
-          {!isConfirmMode && (
+          {/* ALWAYS show close button if onCancel exists */}
+          {onCancel && !isConfirmMode && (
             <button
               type="button"
               className="tp-modal__close"
-              onClick={onCancel}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("X button clicked!"); // DEBUG
+                onCancel();
+              }}
               aria-label="Sluiten"
             >
               ×

@@ -8,6 +8,7 @@ export default function AttendanceTracker({
   lessonId,
   attendees = [],
   onAttendanceChange,
+  variant = "card",
 }) {
   const { user } = useAuth();
   const [myStatus, setMyStatus] = useState(null);
