@@ -147,25 +147,44 @@ Alle cursist functionaliteiten plus:
 ##  Project Structuur
 
 ```
-src/
-├── assets/          # Statische bestanden (images, icons)
-├── components/      # Herbruikbare React componenten
-│   ├── activity/    # Activiteit gerelateerde componenten
-│   ├── board/       # Community board componenten
-│   ├── dashboard/   # Dashboard componenten
-│   ├── homework/    # Huiswerk componenten
-│   ├── layout/      # Layout componenten (Navbar, Sidebar)
-│   ├── lesson/      # Les componenten
-│   ├── social/      # Sociale interactie componenten
-│   └── ui/          # UI componenten (Button, Modal, etc.)
-├── contexts/        # React Context providers
-│   └── AuthContext.jsx
-├── data/           # Statische data en configuratie
-├── helpers/        # Utility functies
-├── pages/          # Pagina componenten
-├── routes/         # Route guards en configuratie
-├── services/       # API service layer
-└── styles/         # Globale styles en variabelen
+taalpunt-react/
+├── src/
+│   ├── assets/          # Afbeeldingen, fonts, icons
+│   ├── components/      # Herbruikbare UI componenten
+│   │   ├── common/      # Button, Modal, Card, etc.
+│   │   ├── layout/      # Navbar, Sidebar, Footer
+│   │   └── features/    # Feature-specifieke componenten
+│   ├── contexts/        # React Context providers
+│   │   ├── AuthContext.jsx
+│   │   └── ThemeContext.jsx
+│   ├── hooks/           # Custom React hooks
+│   │   ├── useAuth.js
+│   │   ├── useAsync.js
+│   │   └── useFetch.js
+│   ├── pages/           # Route componenten
+│   │   ├── Dashboard/
+│   │   ├── Lessons/
+│   │   ├── TeachersRoom/
+│   │   └── Board/
+│   ├── services/        # API services
+│   │   ├── api/         # Axios configuratie
+│   │   ├── authService.js
+│   │   ├── lessonService.js
+│   │   └── messageService.js
+│   ├── styles/          # Globale styles
+│   │   ├── variables.css
+│   │   └── global.css
+│   ├── utils/           # Helper functies
+│   ├── App.jsx          # Root component
+│   ├── main.jsx         # Entry point
+│   └── router.jsx       # Route configuratie
+├── public/              # Static files
+├── .env                 # Environment variables (niet in git)
+├── .env.example         # Environment template
+├── .gitignore          
+├── package.json         
+├── vite.config.js       # Vite configuratie
+└── README.md           
 ```
 
 ## API Endpoints
