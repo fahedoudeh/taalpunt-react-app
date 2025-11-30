@@ -17,10 +17,10 @@ export default function Modal({
   return (
     <div className="tp-modal-backdrop" role="dialog" aria-modal="true">
       <div className="tp-modal">
-        {/* Header */}
+        
         <header className="tp-modal__header">
           {title && <h2 className="tp-modal__title">{title}</h2>}
-          {/* ALWAYS show close button if onCancel exists */}
+          
           {onCancel && !isConfirmMode && (
             <button
               type="button"
@@ -28,7 +28,7 @@ export default function Modal({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log("X button clicked!"); // DEBUG
+                
                 onCancel();
               }}
               aria-label="Sluiten"
@@ -38,12 +38,12 @@ export default function Modal({
           )}
         </header>
 
-        {/* Body */}
+        
         <div className="tp-modal__body">
           {isConfirmMode ? <p>{message}</p> : children}
         </div>
 
-        {/* Footer only in confirm mode */}
+        
         {isConfirmMode && (
           <footer className="tp-modal__footer">
             <button

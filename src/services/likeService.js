@@ -1,7 +1,7 @@
 
 import api from "./api";
 
-// Get all likes (with optional filters)
+// Get all likes 
 export const getLikes = async (params) => {
   return api.get("/likes", { params });
 };

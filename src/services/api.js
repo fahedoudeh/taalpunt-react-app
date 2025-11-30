@@ -5,12 +5,12 @@ import axios from "axios";
 // - headers: NOVI project id + JSON
 // - timeout: abort requests that take longer than 10s (10,000 ms)
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // https://novi-backend-api-wgsgz.ondigitalocean.app/api
+  baseURL: import.meta.env.VITE_API_URL, 
   headers: {
     "Content-Type": "application/json",
-    "novi-education-project-id": import.meta.env.VITE_NOVI_PROJECT_ID, // NOVI requires this on every request cc3fe423-f322-495b-95d9-0579d147a403
+    "novi-education-project-id": import.meta.env.VITE_NOVI_PROJECT_ID, 
   },
-  timeout: 10000, //  10 seconds
+  timeout: 10000, 
 });
 
 // Before each request: attach Authorization if we have a token.
@@ -34,7 +34,7 @@ api.interceptors.response.use(
     if (status === 401 && !url.endsWith("/login")) {
       localStorage.removeItem("token");
       window.location.href = "/login";
-      return; // not strictly necessary, but keeps intent clear
+      return; 
     }
 
     return Promise.reject(err);

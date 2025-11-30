@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
           userFromToken.email?.split("@")[0] ||
           "Gebruiker"
       ),
-      // Add any other profile fields here
+      
       avatar: userProfile?.avatar || null,
       bio: userProfile?.bio || null,
     };
@@ -82,8 +82,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("userProfile", JSON.stringify(data));
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
-        // Don't clear token on profile fetch failure
-        // User can still use app with JWT data
+        
       } finally {
         setLoading(false);
       }

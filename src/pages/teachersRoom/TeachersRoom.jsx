@@ -347,14 +347,14 @@ export default function TeachersRoom() {
 
   const handleSaveHomeworkFeedback = async (submissionId, feedback) => {
     try {
-      // Find the submission to get all required fields
+      
       const submission = homeworkSubmissions.find((s) => s.id === submissionId);
 
       if (!submission) {
         throw new Error("Submission not found");
       }
 
-      // Send complete submission object with updated fields
+      
       await updateSubmission(submissionId, {
         homeworkId: submission.homeworkId,
         studentId: submission.studentId,

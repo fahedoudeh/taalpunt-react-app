@@ -42,7 +42,7 @@ function PostCard({
   const hasBeenUpdated = Boolean(updatedAt && updatedAt !== createdAt);
 
   const handleCardClick = (e) => {
-    // Don't navigate if clicking on interactive elements
+    
     if (
       e.target.closest(".post-card__actions") ||
       e.target.closest(".like-button") ||
@@ -56,7 +56,7 @@ function PostCard({
   const handleLikeChange = async (action, likeId) => {
     try {
       if (action === "like") {
-        // Create like
+        
         const payload = {
           messageId: Number(message.id),
           userId: Number(user.id),
@@ -70,7 +70,7 @@ function PostCard({
 
         return newLike.id;
       } else {
-        // Delete like
+        
         await deleteLike(likeId);
         setLocalLikes((prev) => prev.filter((like) => like.id !== likeId));
         if (onDataChange) onDataChange();

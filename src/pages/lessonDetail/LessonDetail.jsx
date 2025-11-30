@@ -65,7 +65,7 @@ export default function LessonDetail() {
     (async () => {
       setLoadingHomework(true);
       try {
-        // Fetch homework
+        
         const homeworkResponse = await getHomework({ lessonId: lesson.id });
         const allHomework = homeworkResponse?.data || [];
         const lessonHomework = allHomework.find(

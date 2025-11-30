@@ -2,8 +2,8 @@ import "./Button.css";
 
 function Button({
   children,
-  variant = "primary", // "primary" | "secondary" | "ghost" | "danger" | "accent"
-  size = "md", // "sm" | "md" | "lg"
+  variant = "primary", 
+  size = "md", 
   fullWidth = false,
   className = "",
   type = "button",

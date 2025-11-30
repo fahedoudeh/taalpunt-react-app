@@ -24,7 +24,7 @@ export default function PostForm({
 
   const isTeacherContext = context === "teachers";
 
-  // Alleen "bewerken" als we echt een id hebben
+  
   const isEditing = Boolean(initialData && initialData.id);
 
   const {
@@ -46,7 +46,7 @@ export default function PostForm({
       content: data.content.trim(),
       type: data.type.trim(),
       tags: data.tags.trim(),
-      // geen teachersOnly meer in dit formulier
+      
     };
 
     onSubmit(formData);

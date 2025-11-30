@@ -1,1 +1,0 @@
-// For berichten feed

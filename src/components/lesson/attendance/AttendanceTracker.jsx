@@ -17,7 +17,7 @@ export default function AttendanceTracker({
   useEffect(() => {
     if (!user?.id) return;
 
-    // Find current user's status
+    
     const myAttendance = attendees.find(
       (att) => Number(att.userId) === Number(user.id)
     );
@@ -39,7 +39,7 @@ export default function AttendanceTracker({
       return;
     }
 
-    // Optimistic UI update
+   
     setMyStatus(status);
 
     if (onAttendanceChange) {

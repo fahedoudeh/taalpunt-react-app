@@ -1,4 +1,4 @@
-// Kleine, uitbreidbare lijst. Voeg gerust meer items toe.
+
 export const WORDS = [
   {
     term: "aanwinst",

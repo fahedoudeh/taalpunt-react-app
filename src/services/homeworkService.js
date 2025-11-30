@@ -1,6 +1,6 @@
 import api from "./api";
 
-// ---------- HOMEWORK (assignments) ----------
+
 
 // Get all homework rows (with optional filters)
 export const getHomework = async (params) => {

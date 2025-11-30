@@ -46,7 +46,7 @@ export default function Board() {
     setLoading(true);
     setError("");
     try {
-      // Fetch messages
+      
       const { data } = await getMessages();
       const list = Array.isArray(data) ? data : [];
       const communityOnly = list.filter((m) => !m.teachersOnly);
@@ -93,11 +93,11 @@ export default function Board() {
         };
       });
 
-      // SORT BY NEWEST - FIX HERE
+      
       setMessagesWithSocial(sortByNewest(enriched));
     } catch (e) {
       console.error("Error fetching social data:", e);
-      // Still show messages even if social data fails
+      
       setMessagesWithSocial(
         sortByNewest(
           messageList.map((msg) => ({ ...msg, likes: [], comments: [] }))
@@ -170,7 +170,7 @@ export default function Board() {
       }
 
       handleClosePostModal();
-      // Refresh social data
+      
       await fetchMessages();
     } catch (e) {
       setError(

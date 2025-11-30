@@ -4,9 +4,18 @@ import ExpressionOfTheDay from "../sidebar/ExpressionOfTheDay";
 import { JOKES } from "../../../data/jokes";
 
 const links = [
-  { href: "/board", label: "Populaire berichten" },
-  { href: "/activities", label: "Activiteiten in de buurt" },
-  { href: "/lessons", label: "Alle lessen" },
+  { href: "https://www.memrise.com", label: "Memrise – Leer meerdere talen" },
+  {
+    href: "https://zichtbaarnederlands.nl/",
+    label: "Zichtbaar Nederlands – Grammatica",
+  },
+  { href: "https://spreekwoorden.nl/", label: "Spreekwoorden – Overzicht" },
+  { href: "https://www.deepl.com/en/translator", label: "DeepL – Vertalen" },
+  { href: "https://mowb.muiswerken.nl/", label: "Muiswerk – Woordenboek" },
+  {
+    href: "https://oefenen.nl/program/overview",
+    label: "Oefenen.nl – Taalprogramma’s",
+  },
 ];
 
 function JokeOfTheDay() {
@@ -32,13 +41,13 @@ export default function RightSidebar() {
       <ExpressionOfTheDay />
       <JokeOfTheDay />
 
-      {/* HANDIGE LINKS - BLUE BORDER */}
+      {/* HANDIGE LINKSright */}
       <div className="right__card right__card--links">
         <h3 className="right__title">Handige links</h3>
         <ul className="right__list">
           {links.map((l) => (
             <li key={l.href}>
-              <a className="right__link" href={l.href}>
+              <a target="_blank" className="right__link" href={l.href}>
                 {l.label}
               </a>
             </li>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// coordinates for Kapelle, NL
+// coordinates for Kapelle
 const KAPELLE_COORDS = {
   latitude: 51.493,
   longitude: 3.958,

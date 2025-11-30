@@ -286,7 +286,7 @@ export default function Dashboard() {
   const role = user?.role || null;
   const roles = user?.roles || [];
 
-  // Split posts (if you use teachersOnly flag)
+ 
   const communityPosts = posts.filter((post) => !post.teachersOnly);
   const teacherPosts = posts.filter((post) => post.teachersOnly);
 
@@ -301,7 +301,7 @@ export default function Dashboard() {
   const lessonsCount = lessons.length;
   const activitiesCount = activities.length;
 
-  // Today in Dutch
+  
   const today = new Date();
   const formattedDate = new Intl.DateTimeFormat("nl-NL", {
     weekday: "long",
